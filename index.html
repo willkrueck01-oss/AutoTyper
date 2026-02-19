@@ -3,443 +3,1456 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
-  <title>Auto Typer</title>
+  <title>AutoTyper Pro</title>
   <style>
+    /* ═══════════════════════════════════════
+       THEMES — 8 total
+    ═══════════════════════════════════════ */
     :root {
-      --bg: #2d2118;
-      --panel: #3a2b1f;
-      --panel-soft: #4a3626;
-      --line: #5d4631;
-      --line-strong: #7c5f44;
-      --text: #f8efe3;
-      --muted: #cfb9a0;
-      --accent: #d7a46a;
-      --accent-2: #b3743e;
-      --good: #6ad7a9;
-      --warn: #e3bc7c;
+      /* Cozy Bronze (default) */
+      --bg:           #2d2118;
+      --panel:        #3a2b1f;
+      --panel-soft:   #4a3626;
+      --line:         #5d4631;
+      --line-strong:  #7c5f44;
+      --text:         #f8efe3;
+      --muted:        #cfb9a0;
+      --accent:       #d7a46a;
+      --accent-2:     #b3743e;
+      --good:         #6ad7a9;
+      --warn:         #e3bc7c;
+      --danger:       #e07070;
+      --glow:         rgba(215,164,106,0.55);
+      --glow-strong:  rgba(215,164,106,0.85);
+      --shimmer:      rgba(255,255,255,0.06);
     }
 
     [data-theme="diamond"] {
-      --bg: #172136;
-      --panel: #1d2b43;
-      --panel-soft: #243451;
-      --line: #3b587f;
-      --line-strong: #5e85bb;
-      --text: #eff8ff;
-      --muted: #a8c2df;
-      --accent: #64d6ff;
-      --accent-2: #6ca1ff;
-      --good: #87f9b6;
-      --warn: #ffd489;
+      --bg:           #172136;
+      --panel:        #1d2b43;
+      --panel-soft:   #243451;
+      --line:         #3b587f;
+      --line-strong:  #5e85bb;
+      --text:         #eff8ff;
+      --muted:        #a8c2df;
+      --accent:       #64d6ff;
+      --accent-2:     #6ca1ff;
+      --good:         #87f9b6;
+      --warn:         #ffd489;
+      --danger:       #ff8a8a;
+      --glow:         rgba(100,214,255,0.55);
+      --glow-strong:  rgba(100,214,255,0.85);
+      --shimmer:      rgba(100,214,255,0.05);
     }
 
     [data-theme="onyx"] {
-      --bg: #121212;
-      --panel: #1f1f1f;
-      --panel-soft: #292929;
-      --line: #3c3c3c;
-      --line-strong: #5c5c5c;
-      --text: #f2f2f2;
-      --muted: #b2b2b2;
-      --accent: #d4d4d4;
-      --accent-2: #969696;
-      --good: #9fe2ab;
-      --warn: #dbcb98;
+      --bg:           #121212;
+      --panel:        #1f1f1f;
+      --panel-soft:   #292929;
+      --line:         #3c3c3c;
+      --line-strong:  #5c5c5c;
+      --text:         #f2f2f2;
+      --muted:        #b2b2b2;
+      --accent:       #d4d4d4;
+      --accent-2:     #969696;
+      --good:         #9fe2ab;
+      --warn:         #dbcb98;
+      --danger:       #e09090;
+      --glow:         rgba(212,212,212,0.45);
+      --glow-strong:  rgba(212,212,212,0.75);
+      --shimmer:      rgba(255,255,255,0.04);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Segoe UI", Arial, sans-serif; background: transparent; color: var(--text); user-select: none; }
+    [data-theme="emerald"] {
+      --bg:           #0d1f15;
+      --panel:        #112618;
+      --panel-soft:   #163020;
+      --line:         #1f4d2e;
+      --line-strong:  #2e6b3e;
+      --text:         #e8f5ec;
+      --muted:        #8bbfa0;
+      --accent:       #4ede8a;
+      --accent-2:     #20b05a;
+      --good:         #a8ffc0;
+      --warn:         #ffe085;
+      --danger:       #ff8080;
+      --glow:         rgba(78,222,138,0.55);
+      --glow-strong:  rgba(78,222,138,0.85);
+      --shimmer:      rgba(78,222,138,0.05);
+    }
 
+    [data-theme="crimson"] {
+      --bg:           #1f0d0d;
+      --panel:        #2a1010;
+      --panel-soft:   #361414;
+      --line:         #5c2222;
+      --line-strong:  #7a3030;
+      --text:         #ffe8e8;
+      --muted:        #cc9999;
+      --accent:       #ff6b6b;
+      --accent-2:     #cc3333;
+      --good:         #7affc0;
+      --warn:         #ffd48a;
+      --danger:       #ff4040;
+      --glow:         rgba(255,107,107,0.55);
+      --glow-strong:  rgba(255,107,107,0.85);
+      --shimmer:      rgba(255,107,107,0.05);
+    }
+
+    [data-theme="synthwave"] {
+      --bg:           #110820;
+      --panel:        #17072e;
+      --panel-soft:   #200b3d;
+      --line:         #3d1566;
+      --line-strong:  #6120a0;
+      --text:         #f5e8ff;
+      --muted:        #c09ad4;
+      --accent:       #d966ff;
+      --accent-2:     #ff4daa;
+      --good:         #66ffcc;
+      --warn:         #ffea66;
+      --danger:       #ff4466;
+      --glow:         rgba(217,102,255,0.6);
+      --glow-strong:  rgba(217,102,255,0.92);
+      --shimmer:      rgba(217,102,255,0.06);
+    }
+
+    [data-theme="arctic"] {
+      --bg:           #0c1824;
+      --panel:        #101f30;
+      --panel-soft:   #14273d;
+      --line:         #24445a;
+      --line-strong:  #3a6880;
+      --text:         #e8f6ff;
+      --muted:        #a0c4df;
+      --accent:       #5dd8ff;
+      --accent-2:     #3bb5e8;
+      --good:         #7affd4;
+      --warn:         #ffd876;
+      --danger:       #ff8080;
+      --glow:         rgba(93,216,255,0.55);
+      --glow-strong:  rgba(93,216,255,0.85);
+      --shimmer:      rgba(93,216,255,0.05);
+    }
+
+    [data-theme="midnight"] {
+      --bg:           #0a0a0f;
+      --panel:        #111118;
+      --panel-soft:   #18181f;
+      --line:         #2a2a3a;
+      --line-strong:  #404055;
+      --text:         #fff8e8;
+      --muted:        #c4b888;
+      --accent:       #f0c644;
+      --accent-2:     #c89e1c;
+      --good:         #7affc0;
+      --warn:         #ff9966;
+      --danger:       #ff6060;
+      --glow:         rgba(240,198,68,0.55);
+      --glow-strong:  rgba(240,198,68,0.85);
+      --shimmer:      rgba(240,198,68,0.05);
+    }
+
+    /* ═══════════════════════════════════════
+       KEYFRAMES
+    ═══════════════════════════════════════ */
+    @keyframes glowPulse {
+      0%   { box-shadow: 0 0 0 0 transparent; border-color: var(--line); }
+      20%  { box-shadow: 0 0 18px 5px var(--glow), 0 0 6px 2px var(--glow-strong) inset; border-color: var(--accent); }
+      100% { box-shadow: 0 0 2px 0 transparent; border-color: var(--line); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 8px 2px var(--glow); }
+      50%       { box-shadow: 0 0 18px 6px var(--glow-strong); }
+    }
+
+    @keyframes shimmerBar {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes brandShimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ═══════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      background: transparent;
+      color: var(--text);
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════
+       SCROLLBARS
+    ═══════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: var(--line-strong);
+      border-radius: 999px;
+      transition: background 0.2s;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ═══════════════════════════════════════
+       SHELL
+    ═══════════════════════════════════════ */
     .shell {
       height: 100vh;
       width: 100vw;
-      background: radial-gradient(circle at top, color-mix(in oklab, var(--panel-soft) 55%, var(--bg)) 0%, var(--bg) 46%);
-      border: 1px solid var(--line-strong);
+      background:
+        radial-gradient(ellipse 80% 50% at 15% 0%, color-mix(in oklab, var(--panel-soft) 70%, var(--bg)) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 85% 100%, color-mix(in oklab, var(--accent-2) 8%, transparent) 0%, transparent 50%),
+        var(--bg);
+      border: 1px solid color-mix(in oklab, var(--line-strong) 80%, var(--accent) 20%);
       border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.03) inset;
+      position: relative;
     }
 
+    /* Top edge highlight */
+    .shell::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--line-strong) 20%,
+        color-mix(in oklab, var(--accent) 60%, white) 50%,
+        var(--line-strong) 80%,
+        transparent 100%);
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ═══════════════════════════════════════
+       TITLEBAR
+    ═══════════════════════════════════════ */
     .titlebar {
-      height: 40px; display: flex; align-items: center; justify-content: space-between;
-      padding: 0 10px 0 14px; border-bottom: 1px solid var(--line);
-      -webkit-app-region: drag; background: rgba(10, 10, 10, 0.3);
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 14px;
+      border-bottom: 1px solid var(--line);
+      -webkit-app-region: drag;
+      background: rgba(0,0,0,0.22);
+      flex-shrink: 0;
+      position: relative;
     }
 
-    .brand { font-size: 12px; letter-spacing: 0.12em; font-weight: 700; }
-    .wcontrols { display: flex; gap: 6px; -webkit-app-region: no-drag; }
+    .titlebar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(0,0,0,0.8);
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px var(--glow);
+    }
+
+    .brand {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+      background: linear-gradient(90deg,
+        var(--muted) 0%,
+        var(--accent) 35%,
+        color-mix(in oklab, var(--accent) 60%, white) 50%,
+        var(--accent-2) 65%,
+        var(--muted) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: brandShimmer 5s linear infinite;
+    }
+
+    .brand-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: color-mix(in oklab, var(--accent) 70%, var(--muted));
+      background: color-mix(in oklab, var(--panel-soft) 90%, var(--accent) 10%);
+      border: 1px solid color-mix(in oklab, var(--line) 60%, var(--accent) 40%);
+      border-radius: 5px;
+      padding: 2px 6px;
+    }
+
+    .wcontrols {
+      display: flex;
+      gap: 7px;
+      -webkit-app-region: no-drag;
+    }
+
     .wcontrols button {
-      width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel);
-      color: var(--text); cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel) 90%, black 10%);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
-    .content { padding: 12px; display: flex; flex-direction: column; gap: 10px; -webkit-app-region: no-drag; height: calc(100vh - 40px); }
-    .tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-    .tab-btn { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: 11px; font-weight: 700; padding: 8px; cursor: pointer; }
-    .tab-btn.active { background: linear-gradient(160deg, var(--accent-2), var(--accent)); color: #101820; border-color: color-mix(in oklab, var(--accent), white 10%); }
+    .wcontrols button:hover {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: var(--panel-soft);
+    }
 
-    .panel-area { border: 1px solid var(--line); border-radius: 11px; background: color-mix(in oklab, var(--panel) 80%, black 20%); padding: 10px; flex: 1; min-height: 0; overflow: auto; }
+    .wcontrols .btn-close:hover {
+      background: rgba(200,50,50,0.25);
+      border-color: rgba(200,60,60,0.6);
+      color: #ff9090;
+    }
+
+    /* ═══════════════════════════════════════
+       CONTENT LAYOUT
+    ═══════════════════════════════════════ */
+    .content {
+      padding: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      -webkit-app-region: no-drag;
+      height: calc(100vh - 44px);
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════
+       TABS
+    ═══════════════════════════════════════ */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: color-mix(in oklab, var(--panel) 90%, black 10%);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 9px 4px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .tab-btn:hover:not(.active) {
+      border-color: var(--line-strong);
+      color: var(--text);
+      background: var(--panel-soft);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(155deg, var(--accent-2) 0%, var(--accent) 100%);
+      color: rgba(0,0,0,0.85);
+      border-color: color-mix(in oklab, var(--accent) 70%, white 30%);
+      box-shadow: 0 4px 14px var(--glow), 0 1px 0 rgba(255,255,255,0.15) inset;
+      transform: translateY(-1px);
+      font-weight: 900;
+    }
+
+    /* ═══════════════════════════════════════
+       PANEL AREA
+    ═══════════════════════════════════════ */
+    .panel-area {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: color-mix(in oklab, var(--panel) 88%, black 12%);
+      padding: 12px;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
     .panel { display: none; }
-    .panel.active { display: block; }
+    .panel.active { display: block; animation: fadeInUp 0.15s ease; }
 
-    label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.11em; color: var(--muted); display: block; margin-bottom: 5px; }
-    textarea, input[type="number"], input[type="text"], input[type="range"], select {
-      width: 100%; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 9px 10px; font-size: 13px; outline: none;
+    /* ═══════════════════════════════════════
+       TYPOGRAPHY & FORM ELEMENTS
+    ═══════════════════════════════════════ */
+    label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 800;
     }
-    textarea { min-height: 200px; resize: vertical; max-height: 360px; line-height: 1.4; }
-    input[type="range"] { padding: 0; accent-color: var(--accent); height: 28px; }
+
+    textarea,
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel) 92%, black 8%);
+      color: var(--text);
+      padding: 9px 11px;
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+    }
+
+    textarea:focus,
+    input[type="number"]:focus,
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 22%, transparent);
+    }
+
+    textarea {
+      min-height: 185px;
+      resize: vertical;
+      max-height: 330px;
+      line-height: 1.55;
+      user-select: text;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      padding: 0;
+      accent-color: var(--accent);
+      height: 26px;
+      cursor: pointer;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
 
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .hotkey-input { text-align: center; cursor: pointer; caret-color: transparent; font-weight: 600; }
-    .hotkey-input.capturing { border-color: var(--accent); }
-    .row-inline { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; background: var(--panel-soft); margin-bottom: 10px; }
-    .checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-    input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
-    .range-value { margin-top: 4px; color: var(--muted); font-size: 11px; text-align: right; }
 
-    .btn { border: 1px solid var(--line); background: var(--panel-soft); color: var(--text); border-radius: 9px; padding: 10px; font-size: 12px; cursor: pointer; font-weight: 700; }
-    .btn-launch { flex: 1; background: linear-gradient(160deg, var(--accent-2), var(--accent)); color: #111; }
-    .btn-launch.stop { border-color: var(--warn); background: #6a4122; color: #fbe9d5; }
-    .actions, .tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .range-value {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10.5px;
+      text-align: right;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
 
-    .progress-wrap { height: 6px; border-radius: 999px; background: #221d19; overflow: hidden; border: 1px solid var(--line); }
-    .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 55%, white)); transition: width 0.15s linear; }
-    .status { border-radius: 9px; border: 1px solid var(--line); padding: 9px 10px; font-size: 12px; text-align: center; color: var(--muted); background: var(--panel-soft); min-height: 36px; }
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--line) 30%, var(--line) 70%, transparent 100%);
+      margin: 10px 0;
+    }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .stat { border: 1px solid var(--line); background: var(--panel-soft); border-radius: 8px; padding: 8px; }
-    .stat-title { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
-    .stat-value { margin-top: 4px; font-size: 15px; font-weight: 700; }
+    .section-label {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 7px;
+      opacity: 0.65;
+    }
 
-    .history { margin-top: 10px; border: 1px solid var(--line); border-radius: 9px; padding: 8px; max-height: 130px; overflow: auto; background: var(--panel-soft); font-size: 12px; }
-    .history div { padding: 4px 0; border-bottom: 1px dashed color-mix(in oklab, var(--line) 45%, transparent); }
-    .history div:last-child { border-bottom: none; }
-    .footer { font-size: 11px; color: var(--muted); text-align: center; }
+    .row-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: var(--panel-soft);
+      margin-bottom: 9px;
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s;
+      font-weight: 600;
+    }
+
+    .checkbox-wrap:hover { color: var(--text); }
+
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .hotkey-input {
+      text-align: center;
+      cursor: pointer;
+      caret-color: transparent;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      font-size: 13px;
+    }
+
+    .hotkey-input.capturing {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--glow), 0 0 12px var(--glow);
+      animation: pulseGlow 1s ease infinite;
+      color: var(--accent);
+    }
+
+    kbd {
+      background: var(--panel);
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-size: 11px;
+      font-family: "Cascadia Code", "Consolas", monospace;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ═══════════════════════════════════════
+       BUTTONS
+    ═══════════════════════════════════════ */
+    .btn {
+      border: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel-soft) 95%, black 5%);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 10px 12px;
+      font-size: 11.5px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      border-color: var(--line-strong);
+      background: color-mix(in oklab, var(--panel-soft) 70%, var(--accent) 10%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+    }
+
+    .btn:active { transform: translateY(0); box-shadow: none; }
+
+    /* Primary launch button */
+    .btn-launch {
+      flex: 1;
+      background: linear-gradient(155deg, var(--accent-2) 0%, var(--accent) 100%);
+      color: rgba(0,0,0,0.85);
+      border-color: color-mix(in oklab, var(--accent) 70%, white 30%);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      box-shadow: 0 4px 18px var(--glow);
+    }
+
+    .btn-launch:hover {
+      box-shadow: 0 6px 26px var(--glow-strong);
+      background: linear-gradient(155deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 65%, white) 100%);
+    }
+
+    .btn-launch.stop {
+      background: linear-gradient(155deg, #5a1c1c 0%, #8c2828 100%);
+      border-color: #aa4040;
+      color: #ffdede;
+      box-shadow: 0 4px 18px rgba(180,50,50,0.45);
+    }
+
+    .btn-launch.stop:hover {
+      box-shadow: 0 6px 26px rgba(200,50,50,0.65);
+    }
+
+    /* ── GLOW SYSTEM ── */
+
+    /* One-shot glow: fires on apply actions */
+    .btn-glow-applied {
+      animation: glowPulse 1.4s ease-out forwards;
+    }
+
+    /* Persistent glow: on/off toggle state */
+    .btn-active-glow {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 12px 3px var(--glow), 0 0 4px 1px var(--glow-strong) inset !important;
+      animation: pulseGlow 2.4s ease infinite;
+      color: var(--accent) !important;
+    }
+
+    /* ═══════════════════════════════════════
+       ACTIONS / TOOLS GRID
+    ═══════════════════════════════════════ */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════
+       PROGRESS BAR
+    ═══════════════════════════════════════ */
+    .progress-wrap {
+      height: 5px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--panel) 85%, black 15%);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        var(--accent-2),
+        var(--accent),
+        color-mix(in oklab, var(--accent) 55%, white),
+        var(--accent));
+      background-size: 200% 100%;
+      transition: width 0.15s linear;
+      border-radius: 999px;
+    }
+
+    .progress-bar.active {
+      animation: shimmerBar 1.8s linear infinite;
+    }
+
+    /* ═══════════════════════════════════════
+       STATUS BAR
+    ═══════════════════════════════════════ */
+    .status {
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      padding: 8px 13px;
+      font-size: 11.5px;
+      text-align: center;
+      color: var(--muted);
+      background: color-mix(in oklab, var(--panel-soft) 75%, black 25%);
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.2s ease, color 0.2s ease;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .status.typing   { border-color: var(--good);   color: var(--good); }
+    .status.typing .status-dot   { background: var(--good);   animation: dotPulse 0.9s ease infinite; box-shadow: 0 0 6px var(--good); }
+    .status.done     { border-color: var(--accent);  color: var(--accent); }
+    .status.done .status-dot     { background: var(--accent);  box-shadow: 0 0 5px var(--accent); }
+    .status.error    { border-color: var(--danger);  color: var(--danger); }
+    .status.error .status-dot    { background: var(--danger);  box-shadow: 0 0 5px var(--danger); }
+    .status.idle .status-dot     { background: var(--muted); }
+
+    /* ═══════════════════════════════════════
+       STATS PANEL
+    ═══════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      background: color-mix(in oklab, var(--panel-soft) 85%, black 15%);
+      border-radius: 10px;
+      padding: 10px 10px 9px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .stat:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-1px);
+    }
+
+    .stat-title {
+      color: var(--muted);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-weight: 800;
+    }
+
+    .stat-value {
+      margin-top: 6px;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-value.accent  { color: var(--accent); }
+    .stat-value.warn    { color: var(--warn); }
+    .stat-value.good    { color: var(--good); }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .history-title {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .history-clear {
+      font-size: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 2px 7px;
+      border-radius: 5px;
+      transition: all 0.15s;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.05em;
+    }
+
+    .history-clear:hover { color: var(--danger); background: rgba(200,50,50,0.12); }
+
+    .history {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 7px 8px;
+      max-height: 118px;
+      overflow: auto;
+      background: color-mix(in oklab, var(--panel-soft) 70%, black 30%);
+    }
+
+    .history-item {
+      padding: 5px 4px;
+      border-bottom: 1px solid color-mix(in oklab, var(--line) 38%, transparent);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      transition: color 0.1s;
+    }
+
+    .history-item:hover { color: var(--text); }
+    .history-item:last-child { border-bottom: none; }
+    .h-time  { color: var(--accent); font-weight: 800; min-width: 54px; font-size: 10.5px; }
+    .h-sep   { color: var(--line-strong); user-select: none; }
+    .h-wpm   { color: var(--good); font-weight: 700; }
+    .h-empty { opacity: 0.4; font-style: italic; }
+
+    /* ═══════════════════════════════════════
+       TEXT PANEL META
+    ═══════════════════════════════════════ */
+    .text-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 10.5px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .text-meta-right { display: flex; gap: 10px; }
+
+    /* ═══════════════════════════════════════
+       TOOLS PANEL
+    ═══════════════════════════════════════ */
+    .tool-feedback {
+      margin-top: 10px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: color-mix(in oklab, var(--panel) 75%, black 25%);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+      min-height: 38px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tool-feedback.active {
+      color: var(--accent);
+      border-color: color-mix(in oklab, var(--accent) 40%, var(--line));
+    }
+
+    /* ═══════════════════════════════════════
+       CONTROLS PANEL — AOT dot
+    ═══════════════════════════════════════ */
+    .aot-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      margin-right: 5px;
+      vertical-align: middle;
+      transition: background 0.2s, box-shadow 0.2s;
+      position: relative;
+      top: -0.5px;
+    }
+
+    .aot-dot.on {
+      background: var(--good);
+      box-shadow: 0 0 6px var(--good);
+      animation: dotPulse 2s ease infinite;
+    }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    .footer {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      flex-shrink: 0;
+      opacity: 0.55;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
 <div class="shell" id="appShell">
+
+  <!-- ── TITLEBAR ── -->
   <div class="titlebar">
-    <span class="brand">AUTO TYPER · TITANIUM EDITION</span>
+    <div class="titlebar-left">
+      <div class="brand-icon">AT</div>
+      <span class="brand">AUTO TYPER PRO</span>
+      <span class="brand-badge">v2.0</span>
+    </div>
     <div class="wcontrols">
       <button onclick="window.api.minimize()" title="Minimize">─</button>
-      <button onclick="window.api.close()" title="Close">✕</button>
+      <button onclick="window.api.close()" class="btn-close" title="Close">✕</button>
     </div>
   </div>
 
+  <!-- ── CONTENT ── -->
   <div class="content">
+
+    <!-- TABS -->
     <div class="tabs">
-      <button class="tab-btn active" data-tab="textPanel">TEXT</button>
-      <button class="tab-btn" data-tab="flowPanel">FLOW</button>
-      <button class="tab-btn" data-tab="mistakesPanel">MISTAKES</button>
-      <button class="tab-btn" data-tab="controlsPanel">CONTROL</button>
-      <button class="tab-btn" data-tab="toolsPanel">TOOLS</button>
-      <button class="tab-btn" data-tab="statsPanel">STATS</button>
+      <button class="tab-btn active" data-tab="textPanel">✏ TEXT</button>
+      <button class="tab-btn" data-tab="flowPanel">⚡ FLOW</button>
+      <button class="tab-btn" data-tab="mistakesPanel">⚠ ERRS</button>
+      <button class="tab-btn" data-tab="controlsPanel">⚙ CTRL</button>
+      <button class="tab-btn" data-tab="toolsPanel">⚒ TOOLS</button>
+      <button class="tab-btn" data-tab="statsPanel">◈ STATS</button>
     </div>
 
+    <!-- PANEL AREA -->
     <div class="panel-area">
-      <div class="panel active" id="textPanel">
-        <label for="text">Text</label>
-        <textarea id="text" placeholder="Type or paste text..." spellcheck="false"></textarea>
-      </div>
 
-      <div class="panel" id="flowPanel">
-        <div class="grid" style="margin-bottom:10px;">
-          <div><label for="speed">Base chars/sec</label><input type="number" id="speed" value="20" min="1" max="500" step="1" /></div>
-          <div><label for="persistence">WPM persistence</label><input type="range" id="persistence" min="0" max="100" value="65" step="1" /><div class="range-value" id="persistenceValue">65% (balanced variance)</div></div>
-          <div><label for="startupDelayMin">Startup delay min (ms)</label><input type="number" id="startupDelayMin" value="300" min="0" max="10000" step="50" /></div>
-          <div><label for="startupDelayMax">Startup delay max (ms)</label><input type="number" id="startupDelayMax" value="750" min="0" max="10000" step="50" /></div>
-          <div><label for="pauseEveryMin">Pause every (min chars)</label><input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" /></div>
-          <div><label for="pauseEveryMax">Pause every (max chars)</label><input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" /></div>
-          <div><label for="pauseMsMin">Pause length min (ms)</label><input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" /></div>
-          <div><label for="pauseMsMax">Pause length max (ms)</label><input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" /></div>
+      <!-- TEXT PANEL -->
+      <div class="panel active" id="textPanel">
+        <label for="text">Input text</label>
+        <textarea id="text" placeholder="Type or paste your text here..." spellcheck="false"></textarea>
+        <div class="text-meta">
+          <span id="charCount">0 chars</span>
+          <div class="text-meta-right">
+            <span id="wordCount">0 words</span>
+            <span id="lineCount">0 lines</span>
+          </div>
         </div>
       </div>
 
+      <!-- FLOW PANEL -->
+      <div class="panel" id="flowPanel">
+        <div class="grid" style="margin-bottom:10px;">
+          <div>
+            <label for="speed">Base chars / sec</label>
+            <input type="number" id="speed" value="20" min="1" max="500" step="1" />
+          </div>
+          <div>
+            <label for="persistence">WPM persistence</label>
+            <input type="range" id="persistence" min="0" max="100" value="65" step="1" />
+            <div class="range-value" id="persistenceValue">65% · balanced variance</div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="section-label">Startup delay</div>
+        <div class="grid" style="margin-bottom:10px;">
+          <div><label for="startupDelayMin">Min (ms)</label><input type="number" id="startupDelayMin" value="300" min="0" max="10000" step="50" /></div>
+          <div><label for="startupDelayMax">Max (ms)</label><input type="number" id="startupDelayMax" value="750" min="0" max="10000" step="50" /></div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="section-label">Micro-pauses</div>
+        <div class="grid">
+          <div><label for="pauseEveryMin">Every min (chars)</label><input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" /></div>
+          <div><label for="pauseEveryMax">Every max (chars)</label><input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" /></div>
+          <div><label for="pauseMsMin">Length min (ms)</label><input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" /></div>
+          <div><label for="pauseMsMax">Length max (ms)</label><input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" /></div>
+        </div>
+      </div>
+
+      <!-- MISTAKES PANEL -->
       <div class="panel" id="mistakesPanel">
-        <div style="margin-bottom: 12px;">
+        <div style="margin-bottom:14px;">
           <label for="mistakeRate">Mistake frequency</label>
           <input type="range" id="mistakeRate" min="0" max="12" value="2" step="1" />
           <div class="range-value" id="mistakeRateValue">2% chance per letter</div>
         </div>
-        <div>
+        <div class="section-divider"></div>
+        <div style="margin-top:12px;">
           <label for="correctionSpeed">Correction speed</label>
           <input type="range" id="correctionSpeed" min="1" max="5" value="3" step="1" />
           <div class="range-value" id="correctionSpeedValue">Balanced</div>
         </div>
       </div>
 
+      <!-- CONTROLS PANEL -->
       <div class="panel" id="controlsPanel">
         <div class="grid" style="margin-bottom:10px;">
-          <div><label for="hotkey">Hotkey</label><input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" /></div>
-          <div><label for="theme">Theme</label>
-            <select id="theme"><option value="cozy">Cozy Bronze</option><option value="diamond">Diamond Blue</option><option value="onyx">Onyx Mono</option></select>
+          <div>
+            <label for="hotkey">Global hotkey</label>
+            <input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" />
           </div>
-          <div><label for="width">Window width</label><input id="width" type="number" min="760" max="1680" step="10" value="980"></div>
-          <div><label for="height">Window height</label><input id="height" type="number" min="620" max="1200" step="10" value="760"></div>
+          <div>
+            <label for="theme">Theme</label>
+            <select id="theme">
+              <option value="cozy">Cozy Bronze</option>
+              <option value="diamond">Diamond Blue</option>
+              <option value="onyx">Onyx Mono</option>
+              <option value="emerald">Emerald Matrix</option>
+              <option value="crimson">Crimson Forge</option>
+              <option value="synthwave">Synthwave Neon</option>
+              <option value="arctic">Arctic Glass</option>
+              <option value="midnight">Midnight Gold</option>
+            </select>
+          </div>
+          <div><label for="width">Window width (px)</label><input id="width" type="number" min="760" max="1680" step="10" value="980"></div>
+          <div><label for="height">Window height (px)</label><input id="height" type="number" min="620" max="1200" step="10" value="760"></div>
         </div>
 
         <div class="row-inline">
-          <div class="checkbox-wrap"><input type="checkbox" id="humanized" checked /><label for="humanized" style="margin:0;">Humanized timing</label></div>
-          <button class="btn" id="aotBtn" title="Always on top">AOT ON</button>
+          <label class="checkbox-wrap" style="margin:0;cursor:pointer;">
+            <input type="checkbox" id="humanized" checked />
+            Humanized timing
+          </label>
+          <button class="btn btn-active-glow" id="aotBtn" title="Toggle always on top">
+            <span class="aot-dot on" id="aotDot"></span>AOT ON
+          </button>
           <button class="btn" id="resizeBtn">APPLY SIZE</button>
         </div>
 
-        <div class="actions"><button class="btn btn-launch" id="startBtn">START</button><button class="btn" id="clearBtn">CLEAR</button></div>
+        <div class="actions">
+          <button class="btn btn-launch" id="startBtn">START</button>
+          <button class="btn" id="clearBtn">CLEAR TEXT</button>
+        </div>
       </div>
 
+      <!-- TOOLS PANEL -->
       <div class="panel" id="toolsPanel">
-        <label>Text utilities</label>
-        <div class="tools">
-          <button class="btn" data-tool="trim">Trim spacing</button>
+        <label>Text utilities — click to apply</label>
+        <div class="tools-grid">
+          <button class="btn" data-tool="trim">Trim whitespace</button>
           <button class="btn" data-tool="title">Title Case</button>
           <button class="btn" data-tool="upper">UPPERCASE</button>
           <button class="btn" data-tool="lower">lowercase</button>
           <button class="btn" data-tool="reverse">Reverse text</button>
+          <button class="btn" data-tool="dedup">Remove dup lines</button>
           <button class="btn" data-tool="estimate">Estimate run time</button>
+          <button class="btn" data-tool="copy">Copy to clipboard</button>
+        </div>
+        <div class="tool-feedback" id="toolFeedback">
+          Click any tool above to transform your text. Each action is immediate.
         </div>
       </div>
 
+      <!-- STATS PANEL -->
       <div class="panel" id="statsPanel">
         <div class="stats-grid">
-          <div class="stat"><div class="stat-title">Elapsed</div><div class="stat-value" id="elapsedStat">0.0s</div></div>
-          <div class="stat"><div class="stat-title">Mistakes</div><div class="stat-value" id="mistakeStat">0</div></div>
-          <div class="stat"><div class="stat-title">Lowest WPM</div><div class="stat-value" id="minWpmStat">—</div></div>
-          <div class="stat"><div class="stat-title">Highest WPM</div><div class="stat-value" id="maxWpmStat">—</div></div>
+          <div class="stat">
+            <div class="stat-title">Elapsed</div>
+            <div class="stat-value" id="elapsedStat">0.0s</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Mistakes</div>
+            <div class="stat-value warn" id="mistakeStat">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Min WPM</div>
+            <div class="stat-value accent" id="minWpmStat">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Max WPM</div>
+            <div class="stat-value good" id="maxWpmStat">—</div>
+          </div>
         </div>
-        <div class="history" id="sessionHistory"></div>
+
+        <div class="history-header">
+          <span class="history-title">Session history</span>
+          <button class="history-clear" id="clearHistoryBtn">Clear</button>
+        </div>
+        <div class="history" id="sessionHistory">
+          <div class="history-item h-empty">No sessions yet — start typing to record one.</div>
+        </div>
       </div>
-    </div>
+
+    </div><!-- /panel-area -->
 
     <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
-    <div class="status idle" id="status">Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort</div>
-    <div class="footer">Resizable shell • theme engine • live stats + session history • text tools</div>
-  </div>
-</div>
+    <div class="status idle" id="status">
+      <span class="status-dot"></span>
+      <span id="statusText">Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort</span>
+    </div>
+    <div class="footer">AUTO TYPER PRO · 8 themes · humanized engine · live stats · session history · text tools</div>
+
+  </div><!-- /content -->
+</div><!-- /shell -->
 
 <script>
-const textEl = document.getElementById("text");
-const speedEl = document.getElementById("speed");
-const persistenceEl = document.getElementById("persistence");
-const persistenceValueEl = document.getElementById("persistenceValue");
-const hotkeyEl = document.getElementById("hotkey");
-const humanizedEl = document.getElementById("humanized");
-const pauseEveryMinEl = document.getElementById("pauseEveryMin");
-const pauseEveryMaxEl = document.getElementById("pauseEveryMax");
-const pauseMsMinEl = document.getElementById("pauseMsMin");
-const pauseMsMaxEl = document.getElementById("pauseMsMax");
-const startupDelayMinEl = document.getElementById("startupDelayMin");
-const startupDelayMaxEl = document.getElementById("startupDelayMax");
-const mistakeRateEl = document.getElementById("mistakeRate");
-const correctionSpeedEl = document.getElementById("correctionSpeed");
-const mistakeRateValueEl = document.getElementById("mistakeRateValue");
-const correctionSpeedValueEl = document.getElementById("correctionSpeedValue");
-const startBtn = document.getElementById("startBtn");
-const clearBtn = document.getElementById("clearBtn");
-const resizeBtn = document.getElementById("resizeBtn");
-const widthEl = document.getElementById("width");
-const heightEl = document.getElementById("height");
-const themeEl = document.getElementById("theme");
-const aotBtn = document.getElementById("aotBtn");
-const statusEl = document.getElementById("status");
-const progressEl = document.getElementById("progress");
-const elapsedStat = document.getElementById("elapsedStat");
-const mistakeStat = document.getElementById("mistakeStat");
-const minWpmStat = document.getElementById("minWpmStat");
-const maxWpmStat = document.getElementById("maxWpmStat");
-const sessionHistory = document.getElementById("sessionHistory");
+  /* ── Element refs ── */
+  const textEl              = document.getElementById("text");
+  const speedEl             = document.getElementById("speed");
+  const persistenceEl       = document.getElementById("persistence");
+  const persistenceValueEl  = document.getElementById("persistenceValue");
+  const hotkeyEl            = document.getElementById("hotkey");
+  const humanizedEl         = document.getElementById("humanized");
+  const pauseEveryMinEl     = document.getElementById("pauseEveryMin");
+  const pauseEveryMaxEl     = document.getElementById("pauseEveryMax");
+  const pauseMsMinEl        = document.getElementById("pauseMsMin");
+  const pauseMsMaxEl        = document.getElementById("pauseMsMax");
+  const startupDelayMinEl   = document.getElementById("startupDelayMin");
+  const startupDelayMaxEl   = document.getElementById("startupDelayMax");
+  const mistakeRateEl       = document.getElementById("mistakeRate");
+  const correctionSpeedEl   = document.getElementById("correctionSpeed");
+  const mistakeRateValueEl  = document.getElementById("mistakeRateValue");
+  const correctionSpeedValueEl = document.getElementById("correctionSpeedValue");
+  const startBtn            = document.getElementById("startBtn");
+  const clearBtn            = document.getElementById("clearBtn");
+  const resizeBtn           = document.getElementById("resizeBtn");
+  const widthEl             = document.getElementById("width");
+  const heightEl            = document.getElementById("height");
+  const themeEl             = document.getElementById("theme");
+  const aotBtn              = document.getElementById("aotBtn");
+  const aotDot              = document.getElementById("aotDot");
+  const statusEl            = document.getElementById("status");
+  const statusTextEl        = document.getElementById("statusText");
+  const progressEl          = document.getElementById("progress");
+  const elapsedStat         = document.getElementById("elapsedStat");
+  const mistakeStat         = document.getElementById("mistakeStat");
+  const minWpmStat          = document.getElementById("minWpmStat");
+  const maxWpmStat          = document.getElementById("maxWpmStat");
+  const sessionHistory      = document.getElementById("sessionHistory");
+  const charCountEl         = document.getElementById("charCount");
+  const wordCountEl         = document.getElementById("wordCount");
+  const lineCountEl         = document.getElementById("lineCount");
+  const toolFeedbackEl      = document.getElementById("toolFeedback");
+  const clearHistoryBtn     = document.getElementById("clearHistoryBtn");
 
-let typing = false;
-let capturing = false;
+  /* ── State ── */
+  let typing    = false;
+  let capturing = false;
+  let histEmpty = true;
 
-function num(el, fallback) {
-  const parsed = Number.parseInt(el.value, 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
+  /* ── Helpers ── */
+  function num(el, fallback) {
+    const v = Number.parseInt(el.value, 10);
+    return Number.isFinite(v) ? v : fallback;
+  }
 
-function formatSeconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
-function formatWpm(v) { return Number.isFinite(v) ? `${Math.round(v)}` : "—"; }
+  function formatSeconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
+  function formatWpm(v) { return Number.isFinite(v) ? String(Math.round(v)) : "—"; }
 
-function syncPauseRanges() {
-  pauseEveryMinEl.value = Math.max(1, Math.min(15, num(pauseEveryMinEl, 1)));
-  pauseEveryMaxEl.value = Math.max(num(pauseEveryMinEl, 1), Math.min(15, num(pauseEveryMaxEl, 15)));
-  pauseMsMinEl.value = Math.max(20, Math.min(5000, num(pauseMsMinEl, 80)));
-  pauseMsMaxEl.value = Math.max(num(pauseMsMinEl, 80), Math.min(8000, num(pauseMsMaxEl, 420)));
-  startupDelayMinEl.value = Math.max(0, Math.min(10000, num(startupDelayMinEl, 300)));
-  startupDelayMaxEl.value = Math.max(num(startupDelayMinEl, 300), Math.min(10000, num(startupDelayMaxEl, 750)));
-}
+  /* Fire a one-shot glow animation on any button */
+  function flashGlow(btn) {
+    btn.classList.remove("btn-glow-applied");
+    void btn.offsetWidth; // force reflow so animation restarts
+    btn.classList.add("btn-glow-applied");
+    btn.addEventListener("animationend", () => btn.classList.remove("btn-glow-applied"), { once: true });
+  }
 
-function syncMistakeLabels() {
-  const rate = Math.max(0, Math.min(12, num(mistakeRateEl, 2)));
-  mistakeRateEl.value = rate;
-  mistakeRateValueEl.textContent = `${rate}% chance per letter`;
-  const labels = {1: "Very slow", 2: "Slow", 3: "Balanced", 4: "Fast", 5: "Instant"};
-  correctionSpeedValueEl.textContent = labels[Math.max(1, Math.min(5, num(correctionSpeedEl, 3)))] || "Balanced";
-}
+  /* Status helper */
+  function setStatus(cls, html) {
+    statusEl.className = `status ${cls}`;
+    statusTextEl.innerHTML = html;
+  }
 
-function syncPersistenceLabel() {
-  const val = Math.max(0, Math.min(100, num(persistenceEl, 65)));
-  persistenceEl.value = val;
-  const vibe = val > 82 ? "laser steady" : val > 55 ? "balanced variance" : "expressive human swing";
-  persistenceValueEl.textContent = `${val}% (${vibe})`;
-}
+  /* ── Text meta ── */
+  function updateTextMeta() {
+    const v = textEl.value;
+    const chars = v.length;
+    const words = v.trim() ? v.trim().split(/\s+/).length : 0;
+    const lines = v ? v.split("\n").length : 0;
+    charCountEl.textContent = `${chars.toLocaleString()} chars`;
+    wordCountEl.textContent = `${words.toLocaleString()} words`;
+    lineCountEl.textContent = `${lines.toLocaleString()} lines`;
+  }
 
-[ pauseEveryMinEl, pauseEveryMaxEl, pauseMsMinEl, pauseMsMaxEl, startupDelayMinEl, startupDelayMaxEl ].forEach((el) => el.addEventListener("change", syncPauseRanges));
-mistakeRateEl.addEventListener("input", syncMistakeLabels);
-correctionSpeedEl.addEventListener("input", syncMistakeLabels);
-persistenceEl.addEventListener("input", syncPersistenceLabel);
+  textEl.addEventListener("input", updateTextMeta);
 
-hotkeyEl.addEventListener("click", () => {
-  capturing = true; hotkeyEl.value = "..."; hotkeyEl.classList.add("capturing");
-});
+  /* ── Sync helpers ── */
+  function syncPauseRanges() {
+    pauseEveryMinEl.value = Math.max(1,  Math.min(15,   num(pauseEveryMinEl, 1)));
+    pauseEveryMaxEl.value = Math.max(num(pauseEveryMinEl, 1), Math.min(15, num(pauseEveryMaxEl, 15)));
+    pauseMsMinEl.value    = Math.max(20, Math.min(5000, num(pauseMsMinEl, 80)));
+    pauseMsMaxEl.value    = Math.max(num(pauseMsMinEl, 80), Math.min(8000, num(pauseMsMaxEl, 420)));
+    startupDelayMinEl.value = Math.max(0, Math.min(10000, num(startupDelayMinEl, 300)));
+    startupDelayMaxEl.value = Math.max(num(startupDelayMinEl, 300), Math.min(10000, num(startupDelayMaxEl, 750)));
+  }
 
-document.querySelectorAll(".tab-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === btn.dataset.tab));
+  function syncMistakeLabels() {
+    const rate = Math.max(0, Math.min(12, num(mistakeRateEl, 2)));
+    mistakeRateEl.value = rate;
+    mistakeRateValueEl.textContent = rate === 0 ? "Off — perfect accuracy" : `${rate}% chance per letter`;
+    const labels = { 1:"Very slow", 2:"Slow", 3:"Balanced", 4:"Fast", 5:"Instant" };
+    correctionSpeedValueEl.textContent = labels[Math.max(1, Math.min(5, num(correctionSpeedEl, 3)))] || "Balanced";
+  }
+
+  function syncPersistenceLabel() {
+    const val = Math.max(0, Math.min(100, num(persistenceEl, 65)));
+    persistenceEl.value = val;
+    const vibe = val > 82 ? "laser steady" : val > 55 ? "balanced variance" : "expressive human swing";
+    persistenceValueEl.textContent = `${val}% · ${vibe}`;
+  }
+
+  [pauseEveryMinEl, pauseEveryMaxEl, pauseMsMinEl, pauseMsMaxEl, startupDelayMinEl, startupDelayMaxEl]
+    .forEach(el => el.addEventListener("change", syncPauseRanges));
+  mistakeRateEl.addEventListener("input", syncMistakeLabels);
+  correctionSpeedEl.addEventListener("input", syncMistakeLabels);
+  persistenceEl.addEventListener("input", syncPersistenceLabel);
+
+  /* ── Tabs ── */
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === btn.dataset.tab));
+    });
   });
-});
 
-document.addEventListener("keydown", async (e) => {
-  if (!capturing) return;
-  e.preventDefault();
-  capturing = false;
-  hotkeyEl.classList.remove("capturing");
-  const key = mapKey(e);
-  hotkeyEl.value = key;
-  const ok = await window.api.registerHotkey(key);
-  statusEl.innerHTML = ok ? `Press <kbd>${key}</kbd> in target window to type · <kbd>ESC</kbd> to abort` : `Failed to bind <kbd>${key}</kbd> — try another`;
-});
+  /* ── Hotkey capture ── */
+  hotkeyEl.addEventListener("click", () => {
+    capturing = true;
+    hotkeyEl.value = "Press a key...";
+    hotkeyEl.classList.add("capturing");
+  });
 
-function mapKey(e) {
-  const map = { " ": "Space", ArrowUp: "Up", ArrowDown: "Down", ArrowLeft: "Left", ArrowRight: "Right" };
-  let key = map[e.key] || e.key;
-  if (/^F\d+$/.test(key)) return key;
-  if (key.length === 1) key = key.toUpperCase();
-  return `${e.ctrlKey ? "CommandOrControl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey && key.length > 1 ? "Shift+" : ""}${key}`;
-}
+  document.addEventListener("keydown", async e => {
+    if (!capturing) return;
+    e.preventDefault();
+    capturing = false;
+    hotkeyEl.classList.remove("capturing");
+    const key = mapKey(e);
+    hotkeyEl.value = key;
+    const ok = await window.api.registerHotkey(key);
+    setStatus("", ok
+      ? `Hotkey set · Press <kbd>${key}</kbd> in target window · <kbd>ESC</kbd> to abort`
+      : `Failed to bind <kbd>${key}</kbd> — try a different key`);
+  });
 
-startBtn.addEventListener("click", () => (typing ? window.api.stopTyping() : sendText()));
-clearBtn.addEventListener("click", () => { textEl.value = ""; statusEl.textContent = "Cleared text."; });
-resizeBtn.addEventListener("click", async () => {
-  const ok = await window.api.setWindowSize(num(widthEl, 980), num(heightEl, 760));
-  statusEl.textContent = ok ? "Window size updated." : "Failed to resize window.";
-});
+  function mapKey(e) {
+    const map = { " ":"Space", ArrowUp:"Up", ArrowDown:"Down", ArrowLeft:"Left", ArrowRight:"Right" };
+    let key = map[e.key] || e.key;
+    if (/^F\d+$/.test(key)) return key;
+    if (key.length === 1) key = key.toUpperCase();
+    return `${e.ctrlKey?"CommandOrControl+":""}${e.altKey?"Alt+":""}${e.shiftKey&&key.length>1?"Shift+":""}${key}`;
+  }
 
-themeEl.addEventListener("change", () => {
-  const v = themeEl.value;
-  document.documentElement.setAttribute("data-theme", v === "cozy" ? "" : v);
-  statusEl.textContent = `Theme switched to ${themeEl.options[themeEl.selectedIndex].text}.`;
-});
+  /* ── Start / Stop ── */
+  startBtn.addEventListener("click", () => typing ? window.api.stopTyping() : sendText());
 
-document.querySelectorAll("[data-tool]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const tool = button.dataset.tool;
-    if (tool === "trim") textEl.value = textEl.value.replace(/\s+/g, " ").replace(/\n\s+/g, "\n").trim();
-    if (tool === "title") textEl.value = textEl.value.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
-    if (tool === "upper") textEl.value = textEl.value.toUpperCase();
-    if (tool === "lower") textEl.value = textEl.value.toLowerCase();
-    if (tool === "reverse") textEl.value = textEl.value.split("").reverse().join("");
-    if (tool === "estimate") {
-      const cps = Number.parseFloat(speedEl.value) || 20;
-      const seconds = textEl.value.length / Math.max(cps, 1);
-      statusEl.textContent = `Estimated runtime: ${seconds.toFixed(1)}s (${Math.round(seconds / 60)} min approx)`;
+  /* ── Clear text ── */
+  clearBtn.addEventListener("click", () => {
+    textEl.value = "";
+    updateTextMeta();
+    setStatus("", "Text cleared.");
+    flashGlow(clearBtn);
+  });
+
+  /* ── Resize ── */
+  resizeBtn.addEventListener("click", async () => {
+    const ok = await window.api.setWindowSize(num(widthEl, 980), num(heightEl, 760));
+    setStatus(ok ? "done" : "error", ok ? "Window resized successfully." : "Failed to resize window.");
+    if (ok) flashGlow(resizeBtn);
+  });
+
+  /* ── Theme ── */
+  themeEl.addEventListener("change", () => {
+    const v = themeEl.value;
+    document.documentElement.setAttribute("data-theme", v === "cozy" ? "" : v);
+    setStatus("done", `Theme: ${themeEl.options[themeEl.selectedIndex].text}`);
+  });
+
+  /* ── AOT toggle ── */
+  let aot = true;
+  aotBtn.addEventListener("click", async () => {
+    aot = await window.api.toggleAOT();
+    aotDot.className = `aot-dot${aot ? " on" : ""}`;
+    aotBtn.innerHTML = `<span class="aot-dot${aot ? " on" : ""}" id="aotDot"></span>AOT ${aot ? "ON" : "OFF"}`;
+    if (aot) {
+      aotBtn.classList.add("btn-active-glow");
+    } else {
+      aotBtn.classList.remove("btn-active-glow");
+      flashGlow(aotBtn); // one-shot flash on deactivate
+    }
+  });
+
+  /* ── Tool buttons ── */
+  document.querySelectorAll("[data-tool]").forEach(button => {
+    button.addEventListener("click", async () => {
+      const tool = button.dataset.tool;
+      let msg = null;
+
+      if (tool === "trim") {
+        textEl.value = textEl.value.replace(/[ \t]+/g, " ").replace(/\n[ \t]+/g, "\n").trim();
+        msg = "Whitespace trimmed and normalized.";
+      } else if (tool === "title") {
+        textEl.value = textEl.value.toLowerCase().replace(/\b\w/g, m => m.toUpperCase());
+        msg = "Text converted to Title Case.";
+      } else if (tool === "upper") {
+        textEl.value = textEl.value.toUpperCase();
+        msg = "Text converted to UPPERCASE.";
+      } else if (tool === "lower") {
+        textEl.value = textEl.value.toLowerCase();
+        msg = "Text converted to lowercase.";
+      } else if (tool === "reverse") {
+        textEl.value = textEl.value.split("").reverse().join("");
+        msg = "Text reversed character by character.";
+      } else if (tool === "dedup") {
+        const lines = textEl.value.split("\n");
+        const seen = new Set();
+        const deduped = lines.filter(l => { const k = l.trim(); if (seen.has(k)) return false; seen.add(k); return true; });
+        const removed = lines.length - deduped.length;
+        textEl.value = deduped.join("\n");
+        msg = `Removed ${removed} duplicate line${removed !== 1 ? "s" : ""}.`;
+      } else if (tool === "estimate") {
+        const cps = Number.parseFloat(speedEl.value) || 20;
+        const chars = textEl.value.length;
+        const seconds = chars / Math.max(cps, 1);
+        const wpm = Math.round((cps / 5) * 60);
+        msg = `${chars.toLocaleString()} chars · ~${seconds.toFixed(1)}s · ~${Math.round(seconds/60)} min · ${wpm} WPM target`;
+        setStatus("done", `Estimated: ${seconds.toFixed(1)}s · ${wpm} WPM · ~${Math.round(seconds/60)} min`);
+        toolFeedbackEl.className = "tool-feedback active";
+        toolFeedbackEl.textContent = msg;
+        flashGlow(button);
+        return;
+      } else if (tool === "copy") {
+        if (!textEl.value) {
+          toolFeedbackEl.className = "tool-feedback";
+          toolFeedbackEl.textContent = "Nothing to copy — add text first.";
+          return;
+        }
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = textEl.value;
+          ta.style.cssText = "position:fixed;opacity:0;top:-9999px;left:-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          msg = `Copied ${textEl.value.length.toLocaleString()} chars to clipboard.`;
+          setStatus("done", msg);
+        } catch {
+          toolFeedbackEl.textContent = "Clipboard unavailable — use Ctrl+A, Ctrl+C in the text box.";
+          return;
+        }
+        toolFeedbackEl.className = "tool-feedback active";
+        toolFeedbackEl.textContent = msg;
+        flashGlow(button);
+        return;
+      }
+
+      if (msg) {
+        updateTextMeta();
+        toolFeedbackEl.className = "tool-feedback active";
+        toolFeedbackEl.textContent = msg;
+        setStatus("done", msg);
+        flashGlow(button);
+      }
+    });
+  });
+
+  /* ── Clear history ── */
+  clearHistoryBtn.addEventListener("click", () => {
+    sessionHistory.innerHTML = '<div class="history-item h-empty">No sessions yet — start typing to record one.</div>';
+    histEmpty = true;
+    flashGlow(clearHistoryBtn);
+    setStatus("", "Session history cleared.");
+  });
+
+  /* ── Send text ── */
+  function sendText() {
+    const text = textEl.value;
+    const speed = Number.parseFloat(speedEl.value) || 20;
+    syncPauseRanges();
+    syncMistakeLabels();
+    syncPersistenceLabel();
+
+    if (!text.trim()) {
+      setStatus("error", "No text entered — go to the TEXT tab and add some text.");
       return;
     }
-    statusEl.textContent = `Applied tool: ${button.textContent}.`;
-  });
-});
 
-function sendText() {
-  const text = textEl.value;
-  const speed = Number.parseFloat(speedEl.value) || 20;
+    progressEl.style.width = "0%";
+
+    window.api.startTyping(text, speed, {
+      humanized:         humanizedEl.checked,
+      pauseEveryMin:     num(pauseEveryMinEl, 1),
+      pauseEveryMax:     num(pauseEveryMaxEl, 15),
+      pauseMsMin:        num(pauseMsMinEl, 80),
+      pauseMsMax:        num(pauseMsMaxEl, 420),
+      startupDelayMin:   num(startupDelayMinEl, 300),
+      startupDelayMax:   num(startupDelayMaxEl, 750),
+      typoRatePercent:   num(mistakeRateEl, 2),
+      correctionSpeed:   num(correctionSpeedEl, 3),
+      persistencePercent:num(persistenceEl, 65),
+    });
+  }
+
+  window.api.onRequestText(() => sendText());
+
+  /* ── Status updates from main ── */
+  window.api.onTypingStatus(d => {
+    const key     = hotkeyEl.value;
+    const elapsed = d.elapsedMs || 0;
+
+    elapsedStat.textContent = formatSeconds(elapsed);
+    mistakeStat.textContent = String(d.mistakes || 0);
+    minWpmStat.textContent  = formatWpm(d.minWpm);
+    maxWpmStat.textContent  = formatWpm(d.maxWpm);
+
+    if (d.total) progressEl.style.width = `${Math.round((d.done / d.total) * 100)}%`;
+
+    if (d.state === "typing") {
+      typing = true;
+      startBtn.textContent = "STOP";
+      startBtn.classList.add("stop");
+      progressEl.classList.add("active");
+      const pct = d.total ? Math.round((d.done / d.total) * 100) : 0;
+      setStatus("typing", `Typing… ${pct}% · avg ${formatWpm(d.avgWpm)} WPM`);
+    }
+
+    if (d.state === "done") {
+      typing = false;
+      startBtn.textContent = "START";
+      startBtn.classList.remove("stop");
+      progressEl.classList.remove("active");
+      setStatus("done", `Done in ${formatSeconds(elapsed)} · ${d.mistakes||0} mistakes · <kbd>${key}</kbd> to run again`);
+
+      if (histEmpty) { sessionHistory.innerHTML = ""; histEmpty = false; }
+      const item = document.createElement("div");
+      item.className = "history-item";
+      item.innerHTML =
+        `<span class="h-time">${new Date().toLocaleTimeString()}</span>` +
+        `<span class="h-sep">·</span>${formatSeconds(elapsed)}` +
+        `<span class="h-sep">·</span>${d.mistakes||0} err` +
+        `<span class="h-sep">·</span><span class="h-wpm">${formatWpm(d.minWpm)}–${formatWpm(d.maxWpm)} WPM</span>`;
+      sessionHistory.prepend(item);
+      while (sessionHistory.children.length > 14) sessionHistory.removeChild(sessionHistory.lastChild);
+    }
+
+    if (d.state === "stopped") {
+      typing = false;
+      startBtn.textContent = "START";
+      startBtn.classList.remove("stop");
+      progressEl.classList.remove("active");
+      progressEl.style.width = "0%";
+      setStatus("", `Typing stopped after ${formatSeconds(elapsed)}.`);
+    }
+
+    if (d.state === "error") {
+      typing = false;
+      startBtn.textContent = "START";
+      startBtn.classList.remove("stop");
+      progressEl.classList.remove("active");
+      progressEl.style.width = "0%";
+      setStatus("error", "Failed to send keys — make sure a target window is focused.");
+    }
+  });
+
+  /* ── Init ── */
   syncPauseRanges();
   syncMistakeLabels();
   syncPersistenceLabel();
-
-  if (!text.trim()) {
-    statusEl.textContent = "No text entered.";
-    return;
-  }
-
-  progressEl.style.width = "0%";
-
-  const options = {
-    humanized: humanizedEl.checked,
-    pauseEveryMin: num(pauseEveryMinEl, 1),
-    pauseEveryMax: num(pauseEveryMaxEl, 15),
-    pauseMsMin: num(pauseMsMinEl, 80),
-    pauseMsMax: num(pauseMsMaxEl, 420),
-    startupDelayMin: num(startupDelayMinEl, 300),
-    startupDelayMax: num(startupDelayMaxEl, 750),
-    typoRatePercent: num(mistakeRateEl, 2),
-    correctionSpeed: num(correctionSpeedEl, 3),
-    persistencePercent: num(persistenceEl, 65),
-  };
-
-  window.api.startTyping(text, speed, options);
-}
-
-window.api.onRequestText(() => sendText());
-
-window.api.onTypingStatus((d) => {
-  const key = hotkeyEl.value;
-  const elapsed = d.elapsedMs || 0;
-  elapsedStat.textContent = formatSeconds(elapsed);
-  mistakeStat.textContent = String(d.mistakes || 0);
-  minWpmStat.textContent = formatWpm(d.minWpm);
-  maxWpmStat.textContent = formatWpm(d.maxWpm);
-
-  if (d.total) {
-    progressEl.style.width = `${Math.round((d.done / d.total) * 100)}%`;
-  }
-
-  if (d.state === "typing") {
-    typing = true;
-    startBtn.textContent = "STOP";
-    startBtn.classList.add("stop");
-    statusEl.textContent = `Typing... ${d.total ? Math.round((d.done / d.total) * 100) : 0}% • avg ${formatWpm(d.avgWpm)} WPM`;
-  }
-
-  if (d.state === "done") {
-    typing = false;
-    startBtn.textContent = "START";
-    startBtn.classList.remove("stop");
-    statusEl.innerHTML = `Done in ${formatSeconds(elapsed)} · ${d.mistakes || 0} mistakes · <kbd>${key}</kbd> to run again`;
-    const item = document.createElement("div");
-    item.textContent = `${new Date().toLocaleTimeString()} · ${formatSeconds(elapsed)} · mistakes ${d.mistakes || 0} · WPM ${formatWpm(d.minWpm)}-${formatWpm(d.maxWpm)}`;
-    sessionHistory.prepend(item);
-    while (sessionHistory.children.length > 12) sessionHistory.removeChild(sessionHistory.lastChild);
-  }
-
-  if (d.state === "stopped") {
-    typing = false;
-    startBtn.textContent = "START";
-    startBtn.classList.remove("stop");
-    statusEl.textContent = `Typing stopped after ${formatSeconds(elapsed)}.`;
-    progressEl.style.width = "0%";
-  }
-
-  if (d.state === "error") {
-    typing = false;
-    startBtn.textContent = "START";
-    startBtn.classList.remove("stop");
-    statusEl.textContent = "Failed to send keys. Make sure a target window is focused.";
-    progressEl.style.width = "0%";
-  }
-});
-
-let aot = true;
-aotBtn.addEventListener("click", async () => {
-  aot = await window.api.toggleAOT();
-  aotBtn.textContent = aot ? "AOT ON" : "AOT OFF";
-});
-
-syncPauseRanges();
-syncMistakeLabels();
-syncPersistenceLabel();
+  updateTextMeta();
 </script>
 </body>
 </html>
