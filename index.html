@@ -6,15 +6,15 @@
   <title>Auto Typer</title>
   <style>
     :root {
-      --bg: #090909;
-      --panel: #111111;
-      --line: #2a2a2a;
-      --line-strong: #444444;
-      --text: #f4f4f4;
-      --muted: #a3a3a3;
-      --ok: #f4f4f4;
-      --warn: #d8d8d8;
-      --danger: #ffffff;
+      --bg: #2d2118;
+      --panel: #3a2b1f;
+      --panel-soft: #4a3626;
+      --line: #5d4631;
+      --line-strong: #7c5f44;
+      --text: #f8efe3;
+      --muted: #cfb9a0;
+      --accent: #d7a46a;
+      --accent-2: #b3743e;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,62 +29,97 @@
     .shell {
       height: 100vh;
       width: 100vw;
-      background: var(--bg);
+      background: radial-gradient(circle at top, #3f2f22 0%, var(--bg) 45%);
       border: 1px solid var(--line-strong);
       border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
     }
 
     .titlebar {
-      height: 42px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 10px 0 14px;
       border-bottom: 1px solid var(--line);
       -webkit-app-region: drag;
-      background: #0d0d0d;
+      background: rgba(26, 18, 12, 0.75);
     }
 
     .brand {
       font-size: 12px;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
       color: var(--text);
       font-weight: 700;
     }
 
-    .wcontrols {
-      display: flex;
-      gap: 6px;
-      -webkit-app-region: no-drag;
-    }
+    .wcontrols { display: flex; gap: 6px; -webkit-app-region: no-drag; }
 
     .wcontrols button {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 7px;
       border: 1px solid var(--line);
-      background: #131313;
+      background: #3a2a1f;
       color: var(--text);
       cursor: pointer;
     }
 
-    .wcontrols button:hover { border-color: var(--line-strong); background: #181818; }
+    .wcontrols button:hover { border-color: var(--line-strong); background: #4a3627; }
 
     .content {
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
       -webkit-app-region: no-drag;
+      height: calc(100vh - 40px);
     }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #3a2a1f;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(160deg, var(--accent-2), var(--accent));
+      color: #2f1d12;
+      border-color: #c08650;
+    }
+
+    .panel-area {
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: rgba(44, 31, 22, 0.9);
+      padding: 10px;
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
 
     label {
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.11em;
       color: var(--muted);
       display: block;
       margin-bottom: 5px;
@@ -92,7 +127,8 @@
 
     textarea,
     input[type="number"],
-    input[type="text"] {
+    input[type="text"],
+    input[type="range"] {
       width: 100%;
       border-radius: 9px;
       border: 1px solid var(--line);
@@ -104,10 +140,16 @@
     }
 
     textarea {
-      min-height: 135px;
+      min-height: 165px;
       resize: vertical;
-      max-height: 220px;
+      max-height: 250px;
       line-height: 1.4;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      accent-color: var(--accent);
+      height: 28px;
     }
 
     textarea:focus,
@@ -126,7 +168,7 @@
       font-weight: 600;
     }
 
-    .hotkey-input.capturing { border-color: #888; }
+    .hotkey-input.capturing { border-color: var(--accent); }
 
     .row-inline {
       display: flex;
@@ -136,7 +178,8 @@
       border: 1px solid var(--line);
       border-radius: 9px;
       padding: 9px 10px;
-      background: #0e0e0e;
+      background: var(--panel-soft);
+      margin-bottom: 10px;
     }
 
     .checkbox-wrap {
@@ -147,20 +190,20 @@
       color: var(--muted);
     }
 
-    input[type="checkbox"] {
-      accent-color: #ffffff;
-      width: 16px;
-      height: 16px;
+    input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    .range-value {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
     }
 
-    .actions {
-      display: flex;
-      gap: 8px;
-    }
+    .actions { display: flex; gap: 8px; }
 
     .btn {
       border: 1px solid var(--line);
-      background: #141414;
+      background: #3f2e21;
       color: var(--text);
       border-radius: 9px;
       padding: 10px;
@@ -170,20 +213,26 @@
       letter-spacing: 0.05em;
     }
 
-    .btn:hover { border-color: var(--line-strong); background: #1a1a1a; }
+    .btn:hover { border-color: var(--line-strong); background: #4a3626; }
 
-    .btn-launch { flex: 1; }
+    .btn-launch {
+      flex: 1;
+      background: linear-gradient(160deg, #ad6f3c, #d7a46a);
+      border-color: #c28553;
+      color: #2f1d12;
+    }
 
     .btn-launch.stop {
-      border-color: #777;
-      background: #1d1d1d;
+      border-color: #d8b286;
+      background: #6a4122;
+      color: #fbe9d5;
     }
 
     .progress-wrap {
       margin-top: 2px;
       height: 5px;
       border-radius: 999px;
-      background: #1a1a1a;
+      background: #2f2219;
       overflow: hidden;
       border: 1px solid var(--line);
     }
@@ -191,7 +240,7 @@
     .progress-bar {
       width: 0%;
       height: 100%;
-      background: #ffffff;
+      background: linear-gradient(90deg, #d7a46a, #f0cca1);
       transition: width 0.15s linear;
     }
 
@@ -202,7 +251,7 @@
       font-size: 12px;
       text-align: center;
       color: var(--muted);
-      background: #0e0e0e;
+      background: var(--panel-soft);
       min-height: 36px;
     }
 
@@ -213,7 +262,7 @@
 
     kbd {
       border: 1px solid var(--line-strong);
-      background: #1a1a1a;
+      background: #5e432f;
       border-radius: 4px;
       padding: 1px 5px;
       font-size: 11px;
@@ -223,7 +272,7 @@
     .footer {
       margin-top: 2px;
       font-size: 11px;
-      color: #888;
+      color: #c4aa8f;
       text-align: center;
     }
   </style>
@@ -231,7 +280,7 @@
 <body>
 <div class="shell">
   <div class="titlebar">
-    <span class="brand">AUTO TYPER</span>
+    <span class="brand">AUTO TYPER · COZY MODE</span>
     <div class="wcontrols">
       <button onclick="window.api.minimize()" title="Minimize">─</button>
       <button onclick="window.api.close()" title="Close">✕</button>
@@ -239,51 +288,85 @@
   </div>
 
   <div class="content">
-    <div>
-      <label for="text">Text</label>
-      <textarea id="text" placeholder="Type or paste text..." spellcheck="false"></textarea>
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="textPanel">TEXT</button>
+      <button class="tab-btn" data-tab="flowPanel">FLOW</button>
+      <button class="tab-btn" data-tab="mistakesPanel">MISTAKES</button>
+      <button class="tab-btn" data-tab="controlsPanel">CONTROLS</button>
     </div>
 
-    <div class="grid">
-      <div>
-        <label for="speed">Base chars/sec</label>
-        <input type="number" id="speed" value="20" min="1" max="500" step="1" />
+    <div class="panel-area">
+      <div class="panel active" id="textPanel">
+        <label for="text">Text</label>
+        <textarea id="text" placeholder="Type or paste text..." spellcheck="false"></textarea>
       </div>
-      <div>
-        <label for="hotkey">Hotkey</label>
-        <input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" />
-      </div>
-    </div>
 
-    <div class="row-inline">
-      <div class="checkbox-wrap">
-        <input type="checkbox" id="humanized" checked />
-        <label for="humanized" style="margin:0;">Humanized timing</label>
+      <div class="panel" id="flowPanel">
+        <div class="grid" style="margin-bottom:10px;">
+          <div>
+            <label for="speed">Base chars/sec</label>
+            <input type="number" id="speed" value="20" min="1" max="500" step="1" />
+          </div>
+          <div>
+            <label for="startupDelayMin">Startup delay min (ms)</label>
+            <input type="number" id="startupDelayMin" value="300" min="0" max="10000" step="50" />
+          </div>
+          <div>
+            <label for="pauseEveryMin">Pause every (min chars)</label>
+            <input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" />
+          </div>
+          <div>
+            <label for="pauseEveryMax">Pause every (max chars)</label>
+            <input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" />
+          </div>
+          <div>
+            <label for="pauseMsMin">Pause length min (ms)</label>
+            <input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" />
+          </div>
+          <div>
+            <label for="pauseMsMax">Pause length max (ms)</label>
+            <input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" />
+          </div>
+        </div>
       </div>
-      <button class="btn" id="aotBtn" title="Always on top">AOT ON</button>
-    </div>
 
-    <div class="grid">
-      <div>
-        <label for="pauseEveryMin">Pause every (min chars)</label>
-        <input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" />
+      <div class="panel" id="mistakesPanel">
+        <div style="margin-bottom: 12px;">
+          <label for="mistakeRate">Mistake frequency</label>
+          <input type="range" id="mistakeRate" min="0" max="12" value="2" step="1" />
+          <div class="range-value" id="mistakeRateValue">2% chance per letter</div>
+        </div>
+        <div>
+          <label for="correctionSpeed">Correction speed</label>
+          <input type="range" id="correctionSpeed" min="1" max="5" value="3" step="1" />
+          <div class="range-value" id="correctionSpeedValue">Balanced</div>
+        </div>
       </div>
-      <div>
-        <label for="pauseEveryMax">Pause every (max chars)</label>
-        <input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" />
-      </div>
-      <div>
-        <label for="pauseMsMin">Pause length min (ms)</label>
-        <input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" />
-      </div>
-      <div>
-        <label for="pauseMsMax">Pause length max (ms)</label>
-        <input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" />
-      </div>
-    </div>
 
-    <div class="actions">
-      <button class="btn btn-launch" id="startBtn">START</button>
+      <div class="panel" id="controlsPanel">
+        <div class="grid" style="margin-bottom:10px;">
+          <div>
+            <label for="hotkey">Hotkey</label>
+            <input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" />
+          </div>
+          <div>
+            <label for="startupDelayMax">Startup delay max (ms)</label>
+            <input type="number" id="startupDelayMax" value="750" min="0" max="10000" step="50" />
+          </div>
+        </div>
+
+        <div class="row-inline">
+          <div class="checkbox-wrap">
+            <input type="checkbox" id="humanized" checked />
+            <label for="humanized" style="margin:0;">Humanized timing</label>
+          </div>
+          <button class="btn" id="aotBtn" title="Always on top">AOT ON</button>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-launch" id="startBtn">START</button>
+        </div>
+      </div>
     </div>
 
     <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
@@ -292,7 +375,7 @@
       Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort
     </div>
 
-    <div class="footer">Black + white UI • variable speed bursts • random pauses • occasional typo corrections</div>
+    <div class="footer">Warm bakery palette • section tabs • adjustable mistake behavior</div>
   </div>
 </div>
 
@@ -305,6 +388,12 @@ const pauseEveryMinEl = document.getElementById("pauseEveryMin");
 const pauseEveryMaxEl = document.getElementById("pauseEveryMax");
 const pauseMsMinEl = document.getElementById("pauseMsMin");
 const pauseMsMaxEl = document.getElementById("pauseMsMax");
+const startupDelayMinEl = document.getElementById("startupDelayMin");
+const startupDelayMaxEl = document.getElementById("startupDelayMax");
+const mistakeRateEl = document.getElementById("mistakeRate");
+const correctionSpeedEl = document.getElementById("correctionSpeed");
+const mistakeRateValueEl = document.getElementById("mistakeRateValue");
+const correctionSpeedValueEl = document.getElementById("correctionSpeedValue");
 const startBtn = document.getElementById("startBtn");
 const aotBtn = document.getElementById("aotBtn");
 const statusEl = document.getElementById("status");
@@ -328,17 +417,52 @@ function syncPauseRanges() {
   const maxMs = Math.max(minMs, Math.min(8000, num(pauseMsMaxEl, 420)));
   pauseMsMinEl.value = minMs;
   pauseMsMaxEl.value = maxMs;
+
+  const startMin = Math.max(0, Math.min(10000, num(startupDelayMinEl, 300)));
+  const startMax = Math.max(startMin, Math.min(10000, num(startupDelayMaxEl, 750)));
+  startupDelayMinEl.value = startMin;
+  startupDelayMaxEl.value = startMax;
+}
+
+function syncMistakeLabels() {
+  const rate = Math.max(0, Math.min(12, num(mistakeRateEl, 2)));
+  mistakeRateEl.value = rate;
+  mistakeRateValueEl.textContent = `${rate}% chance per letter`;
+
+  const labels = {
+    1: "Very slow",
+    2: "Slow",
+    3: "Balanced",
+    4: "Fast",
+    5: "Instant"
+  };
+  const correction = Math.max(1, Math.min(5, num(correctionSpeedEl, 3)));
+  correctionSpeedEl.value = correction;
+  correctionSpeedValueEl.textContent = labels[correction] || "Balanced";
 }
 
 pauseEveryMinEl.addEventListener("change", syncPauseRanges);
 pauseEveryMaxEl.addEventListener("change", syncPauseRanges);
 pauseMsMinEl.addEventListener("change", syncPauseRanges);
 pauseMsMaxEl.addEventListener("change", syncPauseRanges);
+startupDelayMinEl.addEventListener("change", syncPauseRanges);
+startupDelayMaxEl.addEventListener("change", syncPauseRanges);
+
+mistakeRateEl.addEventListener("input", syncMistakeLabels);
+correctionSpeedEl.addEventListener("input", syncMistakeLabels);
 
 hotkeyEl.addEventListener("click", () => {
   capturing = true;
   hotkeyEl.value = "...";
   hotkeyEl.classList.add("capturing");
+});
+
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === tabId));
+  });
 });
 
 document.addEventListener("keydown", async (e) => {
@@ -382,6 +506,7 @@ function sendText() {
   const text = textEl.value;
   const speed = Number.parseFloat(speedEl.value) || 20;
   syncPauseRanges();
+  syncMistakeLabels();
 
   if (!text.trim()) {
     statusEl.className = "status error";
@@ -397,6 +522,10 @@ function sendText() {
     pauseEveryMax: num(pauseEveryMaxEl, 15),
     pauseMsMin: num(pauseMsMinEl, 80),
     pauseMsMax: num(pauseMsMaxEl, 420),
+    startupDelayMin: num(startupDelayMinEl, 300),
+    startupDelayMax: num(startupDelayMaxEl, 750),
+    typoRatePercent: num(mistakeRateEl, 2),
+    correctionSpeed: num(correctionSpeedEl, 3),
   };
 
   window.api.startTyping(text, speed, options);
@@ -453,6 +582,9 @@ aotBtn.addEventListener("click", async () => {
   aot = await window.api.toggleAOT();
   aotBtn.textContent = aot ? "AOT ON" : "AOT OFF";
 });
+
+syncPauseRanges();
+syncMistakeLabels();
 </script>
 </body>
 </html>
