@@ -1,16 +1,16 @@
 # ✦ Auto Typer
 
-A minimalist black-and-white auto-typer that simulates keyboard input in any Windows app. Uses a persistent PowerShell process for smooth, jitter-free character-by-character typing.
+A desktop auto-typer for Windows with advanced pacing controls, live run analytics, and utility tools for preparing text before typing.
 
 ## Features
 
-- **Humanized letter-by-letter typing** — random bursts/slows, punctuation pauses, and occasional typo correction
-- **Global hotkey** (F2 default) — works even when the app isn't focused
-- **Escape to stop** at any time
-- **Live progress bar** with percentage
-- **Rebindable hotkey** — click the field and press any key or combo
-- **Always-on-top** toggle
-- **Clean monochrome UI** with focused controls and no visual clutter
+- **Humanized letter-by-letter typing** with bursts/slows, punctuation pauses, and optional typo correction.
+- **WPM persistence control** to tune how tightly the typing speed adheres to your configured target.
+- **Live session analytics** including elapsed time, mistake count, lowest WPM, and highest WPM.
+- **Resizable window** with on-demand width/height controls in-app.
+- **Theme selector** (Cozy Bronze, Diamond Blue, Onyx Mono).
+- **Text tools panel** (trim spacing, title case, upper/lowercase, reverse, runtime estimate).
+- **Global hotkey** (F2 by default), plus Escape abort and always-on-top toggle.
 
 ## Setup
 
@@ -21,32 +21,17 @@ npm run build         # → dist/AutoTyper.exe (portable, no installer)
 npm run build-dir     # → dist/win-unpacked/ (unpackaged, for inspection)
 ```
 
-## Size Optimizations
-
-The build strips significant weight from the default Electron bundle:
-
-| Optimization | Savings |
-|---|---|
-| Strip 50+ Chromium locale files (keep en-US) | ~40 MB |
-| Remove license HTML, hi-dpi assets | ~5 MB |
-| ASAR packing with max compression | ~10 MB |
-| Exclude node_modules from bundle (no deps) | variable |
-| Single-arch x64 only | ~50% vs dual |
-
-**Expected output: ~65-80 MB** for the portable .exe (down from ~180-200 MB unoptimized). This is near the Electron floor since Chromium is bundled.
-
-> For a truly tiny build (~5 MB), you'd need to switch to [Tauri](https://tauri.app/) which uses the OS webview instead of bundling Chromium.
-
 ## Usage
 
-1. Launch the app
-2. Paste text in the "Transmission" box
-3. Set desired characters per second
-4. Click the target window (Discord, Notepad, browser, etc.)
-5. Press **F2** — typing begins after a brief delay
-6. Press **Esc** to abort early
+1. Launch the app.
+2. Paste text into the **Text** panel.
+3. Configure base speed and optional persistence in **Flow**.
+4. Use **Tools** if needed to transform/clean text.
+5. Focus your target app (Notepad, browser, Discord, etc.).
+6. Press **F2** or click **Start**.
+7. Review timing, mistakes, and WPM range in **Stats**.
 
 ## Requirements
 
-- **Windows 10/11** (uses PowerShell SendKeys)
-- **Node.js 18+** for building
+- **Windows 10/11** (typing backend uses PowerShell SendKeys).
+- **Node.js 18+** for development/building.
