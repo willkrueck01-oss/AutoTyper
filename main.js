@@ -205,15 +205,18 @@ async function doType(text, cps, options = {}) {
     }
 
     const now = Date.now();
+    const elapsed = now - startedAt;
     const delta = Math.max(1, now - lastCharAt);
     const instWpm = 12000 / delta;
-    stats.minWpm = stats.minWpm === null ? instWpm : Math.min(stats.minWpm, instWpm);
-    stats.maxWpm = stats.maxWpm === null ? instWpm : Math.max(stats.maxWpm, instWpm);
 
     stats.done = i + 1;
-    stats.elapsedMs = now - startedAt;
-    const elapsedMinutes = Math.max(stats.elapsedMs / 60000, 1 / 60000);
-    stats.avgWpm = (stats.done / 5) / elapsedMinutes;
+    stats.elapsedMs = elapsed;
+
+    if (elapsed >= 1000) {
+      stats.minWpm = stats.minWpm === null ? instWpm : Math.min(stats.minWpm, instWpm);
+      stats.maxWpm = stats.maxWpm === null ? instWpm : Math.max(stats.maxWpm, instWpm);
+      stats.avgWpm = (stats.done / 5) / (elapsed / 60000);
+    }
 
     if (i % 2 === 0 || i === len - 1) {
       emitTypingProgress(stats, "typing");
