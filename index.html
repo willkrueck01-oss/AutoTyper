@@ -651,7 +651,7 @@
 
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-top: 6px;
     }
@@ -1030,19 +1030,33 @@
 
       <!-- TOOLS PANEL -->
       <div class="panel" id="toolsPanel">
-        <label>Text utilities — click to apply</label>
+        <label>Command Center — click to transform, analyze, and organize docs</label>
         <div class="tools-grid">
           <button class="btn" data-tool="trim">Trim whitespace</button>
+          <button class="btn" data-tool="cleanlines">Collapse blank lines</button>
+          <button class="btn" data-tool="dedup">Remove dup lines</button>
           <button class="btn" data-tool="title">Title Case</button>
+          <button class="btn" data-tool="sentence">Sentence case</button>
           <button class="btn" data-tool="upper">UPPERCASE</button>
           <button class="btn" data-tool="lower">lowercase</button>
           <button class="btn" data-tool="reverse">Reverse text</button>
-          <button class="btn" data-tool="dedup">Remove dup lines</button>
+          <button class="btn" data-tool="sortaz">Sort lines A→Z</button>
+          <button class="btn" data-tool="sortza">Sort lines Z→A</button>
+          <button class="btn" data-tool="slug">Slugify headings</button>
+          <button class="btn" data-tool="number">Number lines</button>
+          <button class="btn" data-tool="bullets">Bulletize lines</button>
+          <button class="btn" data-tool="stripemoji">Strip emoji/symbols</button>
+          <button class="btn" data-tool="extractemails">Extract emails</button>
+          <button class="btn" data-tool="extracturls">Extract URLs</button>
+          <button class="btn" data-tool="outline">Build smart outline</button>
+          <button class="btn" data-tool="meeting">Meeting notes format</button>
           <button class="btn" data-tool="estimate">Estimate run time</button>
+          <button class="btn" data-tool="readtime">Reading time</button>
+          <button class="btn" data-tool="stats">Deep text stats</button>
           <button class="btn" data-tool="copy">Copy to clipboard</button>
         </div>
         <div class="tool-feedback" id="toolFeedback">
-          Click any tool above to transform your text. Each action is immediate.
+          Build polished docs fast: clean, format, extract, outline, and prep content instantly.
         </div>
       </div>
 
@@ -1275,18 +1289,45 @@
     }
   });
 
+  function toSentenceCase(text) {
+    return text.toLowerCase().replace(/(^\s*[a-z]|[.!?]\s+[a-z])/g, m => m.toUpperCase());
+  }
+
+  function linesFromText() {
+    return textEl.value.split("\n");
+  }
+
+  function replaceLines(lines) {
+    textEl.value = lines.join("\n");
+    updateTextMeta();
+  }
+
+  function showToolMessage(button, msg, status = "done") {
+    toolFeedbackEl.className = "tool-feedback active";
+    toolFeedbackEl.textContent = msg;
+    setStatus(status, msg);
+    flashGlow(button);
+  }
+
   /* ── Tool buttons ── */
   document.querySelectorAll("[data-tool]").forEach(button => {
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
       const tool = button.dataset.tool;
       let msg = null;
 
       if (tool === "trim") {
         textEl.value = textEl.value.replace(/[ \t]+/g, " ").replace(/\n[ \t]+/g, "\n").trim();
         msg = "Whitespace trimmed and normalized.";
+      } else if (tool === "cleanlines") {
+        const before = textEl.value.length;
+        textEl.value = textEl.value.replace(/\n{3,}/g, "\n\n").trim();
+        msg = `Collapsed heavy spacing (${Math.max(0, before - textEl.value.length)} chars removed).`;
       } else if (tool === "title") {
         textEl.value = textEl.value.toLowerCase().replace(/\b\w/g, m => m.toUpperCase());
         msg = "Text converted to Title Case.";
+      } else if (tool === "sentence") {
+        textEl.value = toSentenceCase(textEl.value);
+        msg = "Text converted to sentence case.";
       } else if (tool === "upper") {
         textEl.value = textEl.value.toUpperCase();
         msg = "Text converted to UPPERCASE.";
@@ -1297,22 +1338,94 @@
         textEl.value = textEl.value.split("").reverse().join("");
         msg = "Text reversed character by character.";
       } else if (tool === "dedup") {
-        const lines = textEl.value.split("\n");
+        const lines = linesFromText();
         const seen = new Set();
         const deduped = lines.filter(l => { const k = l.trim(); if (seen.has(k)) return false; seen.add(k); return true; });
         const removed = lines.length - deduped.length;
-        textEl.value = deduped.join("\n");
+        replaceLines(deduped);
         msg = `Removed ${removed} duplicate line${removed !== 1 ? "s" : ""}.`;
+      } else if (tool === "sortaz" || tool === "sortza") {
+        const lines = linesFromText().filter(Boolean);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }));
+        if (tool === "sortza") lines.reverse();
+        replaceLines(lines);
+        msg = `Lines sorted ${tool === "sortaz" ? "A→Z" : "Z→A"}.`;
+      } else if (tool === "slug") {
+        const lines = linesFromText().map(line => line
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9\s-]/g, "")
+          .trim()
+          .replace(/\s+/g, "-")
+        );
+        replaceLines(lines);
+        msg = "Converted lines into URL/document slugs.";
+      } else if (tool === "number") {
+        const lines = linesFromText().filter(line => line.trim());
+        replaceLines(lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+[.)-]?\s*/, "")}`));
+        msg = "Converted content into numbered list format.";
+      } else if (tool === "bullets") {
+        const lines = linesFromText().filter(line => line.trim());
+        replaceLines(lines.map(line => `• ${line.replace(/^[•\-*\d.\s]+/, "")}`));
+        msg = "Converted lines into clean bullet points.";
+      } else if (tool === "stripemoji") {
+        textEl.value = textEl.value.replace(/[\p{Extended_Pictographic}\p{S}]/gu, "");
+        msg = "Removed emoji and symbol glyphs for plain-text docs.";
+      } else if (tool === "extractemails") {
+        const matches = textEl.value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
+        const unique = [...new Set(matches.map(m => m.toLowerCase()))];
+        textEl.value = unique.join("\n");
+        msg = `Extracted ${unique.length} unique email${unique.length !== 1 ? "s" : ""}.`;
+      } else if (tool === "extracturls") {
+        const matches = textEl.value.match(/https?:\/\/[^\s)]+/gi) || [];
+        const unique = [...new Set(matches)];
+        textEl.value = unique.join("\n");
+        msg = `Extracted ${unique.length} URL${unique.length !== 1 ? "s" : ""}.`;
+      } else if (tool === "outline") {
+        const lines = linesFromText().filter(line => line.trim());
+        const outlined = lines.map((line, i) => {
+          const level = Math.min(3, Math.floor(line.length / 40) + 1);
+          return `${"  ".repeat(level - 1)}${i + 1}.${"0".repeat(level - 1)} ${line.trim()}`;
+        });
+        replaceLines(outlined);
+        msg = "Built a structured outline from current content.";
+      } else if (tool === "meeting") {
+        const lines = linesFromText().filter(line => line.trim());
+        const decisions = lines.filter(l => /decide|approved|ship|resolved/i.test(l));
+        const actions = lines.filter(l => /todo|action|follow up|owner|next/i.test(l));
+        textEl.value = [
+          "# Meeting Notes",
+          "",
+          "## Summary",
+          lines.slice(0, 3).map(l => `- ${l}`).join("\n") || "- Add summary",
+          "",
+          "## Decisions",
+          decisions.length ? decisions.map(l => `- ${l}`).join("\n") : "- None captured",
+          "",
+          "## Action Items",
+          actions.length ? actions.map((l, i) => `${i + 1}. ${l}`).join("\n") : "1. Add owners and due dates",
+        ].join("\n");
+        msg = "Converted notes into a polished meeting-doc template.";
       } else if (tool === "estimate") {
         const cps = Number.parseFloat(speedEl.value) || 20;
         const chars = textEl.value.length;
         const seconds = chars / Math.max(cps, 1);
         const wpm = Math.round((cps / 5) * 60);
-        msg = `${chars.toLocaleString()} chars · ~${seconds.toFixed(1)}s · ~${Math.round(seconds/60)} min · ${wpm} WPM target`;
-        setStatus("done", `Estimated: ${seconds.toFixed(1)}s · ${wpm} WPM · ~${Math.round(seconds/60)} min`);
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        flashGlow(button);
+        showToolMessage(button, `Estimated: ${chars.toLocaleString()} chars · ${seconds.toFixed(1)}s · ${wpm} WPM · ~${Math.round(seconds/60)} min`);
+        return;
+      } else if (tool === "readtime") {
+        const words = textEl.value.trim() ? textEl.value.trim().split(/\s+/).length : 0;
+        const minutes = words / 220;
+        showToolMessage(button, `${words.toLocaleString()} words · ~${minutes.toFixed(1)} min read @ 220 WPM`);
+        return;
+      } else if (tool === "stats") {
+        const text = textEl.value;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const lines = text ? text.split("\n").length : 0;
+        const paragraphs = text.trim() ? text.trim().split(/\n\s*\n/).length : 0;
+        const uniqueWords = new Set((text.toLowerCase().match(/[a-z0-9']+/g) || []));
+        showToolMessage(button, `Chars ${text.length.toLocaleString()} · Words ${words.toLocaleString()} · Lines ${lines} · Paragraphs ${paragraphs} · Unique words ${uniqueWords.size.toLocaleString()}`);
         return;
       } else if (tool === "copy") {
         if (!textEl.value) {
@@ -1329,23 +1442,17 @@
           document.execCommand("copy");
           document.body.removeChild(ta);
           msg = `Copied ${textEl.value.length.toLocaleString()} chars to clipboard.`;
-          setStatus("done", msg);
         } catch {
           toolFeedbackEl.textContent = "Clipboard unavailable — use Ctrl+A, Ctrl+C in the text box.";
           return;
         }
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        flashGlow(button);
+        showToolMessage(button, msg);
         return;
       }
 
       if (msg) {
         updateTextMeta();
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        setStatus("done", msg);
-        flashGlow(button);
+        showToolMessage(button, msg);
       }
     });
   });
