@@ -1,0 +1,40 @@
+{
+  "name": "auto-typer",
+  "version": "1.0.0",
+  "description": "Lightweight space-themed auto-typer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable",
+    "build-dir": "electron-builder --win dir"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.autotyper.app",
+    "productName": "Auto Typer",
+    "compression": "maximum",
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "AutoTyper.exe"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "!node_modules"
+    ],
+    "afterPack": "./scripts/strip.js",
+    "removePackageScripts": true
+  }
+}
