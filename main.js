@@ -9,8 +9,8 @@ let psProcess = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 560,
-    height: 680,
+    width: 520,
+    height: 620,
     resizable: false,
     frame: false,
     transparent: true,
@@ -66,6 +66,12 @@ function buildHumanProfile(cps, options = {}) {
   const pauseEveryMax = clamp(Number(options.pauseEveryMax) || 15, pauseEveryMin, 15);
   const pauseMsMin = clamp(Number(options.pauseMsMin) || 80, 20, 5000);
   const pauseMsMax = clamp(Number(options.pauseMsMax) || 420, pauseMsMin, 8000);
+  const startupDelayMin = clamp(Number(options.startupDelayMin) || 300, 0, 10000);
+  const startupDelayMax = clamp(Number(options.startupDelayMax) || 750, startupDelayMin, 10000);
+  const typoRatePercent = clamp(Number(options.typoRatePercent) || 2, 0, 12);
+  const correctionSpeed = clamp(Number(options.correctionSpeed) || 3, 1, 5);
+
+  const speedScale = 2.1 - correctionSpeed * 0.32;
 
   return {
     enabled: options.humanized !== false,
@@ -73,6 +79,8 @@ function buildHumanProfile(cps, options = {}) {
     pauseEveryMax,
     pauseMsMin,
     pauseMsMax,
+    startupDelayMin,
+    startupDelayMax,
     burstChance: 0.16,
     slowChance: 0.14,
     punctuationPauseChance: 0.85,
@@ -82,7 +90,11 @@ function buildHumanProfile(cps, options = {}) {
     wordPauseMin: 30,
     wordPauseMax: 120,
     baseMs: 1000 / baseCps,
-    typoChance: 0.018,
+    typoChance: typoRatePercent / 100,
+    correctionDelayMin: clamp(25 * speedScale, 8, 80),
+    correctionDelayMax: clamp(120 * speedScale, 25, 220),
+    postCorrectionMin: clamp(45 * speedScale, 12, 95),
+    postCorrectionMax: clamp(150 * speedScale, 35, 260),
   };
 }
 
@@ -119,9 +131,9 @@ async function maybeTypoFix(ch, profile) {
 
   const wrong = Math.random() > 0.5 ? "x" : "e";
   await sendKey(wrong);
-  await sleep(rand(25, 120));
+  await sleep(rand(profile.correctionDelayMin, profile.correctionDelayMax));
   await sendKey("{BACKSPACE}");
-  await sleep(rand(45, 150));
+  await sleep(rand(profile.postCorrectionMin, profile.postCorrectionMax));
 }
 
 async function doType(text, cps, options = {}) {
@@ -198,7 +210,9 @@ ipcMain.on("start-typing", (_e, payload) => {
   const speed = payload?.speed;
   const options = payload?.options || {};
   if (!isTyping && text.trim()) {
-    setTimeout(() => doType(text, speed, options), 400);
+    const profile = buildHumanProfile(speed, options);
+    const startupDelay = Math.floor(rand(profile.startupDelayMin, profile.startupDelayMax + 1));
+    setTimeout(() => doType(text, speed, options), startupDelay);
   }
 });
 
