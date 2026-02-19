@@ -651,9 +651,47 @@
 
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       margin-top: 6px;
+    }
+
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .studio-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: color-mix(in oklab, var(--panel-soft) 82%, black 18%);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .studio-card h4 {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
+      color: var(--accent);
+      background: color-mix(in oklab, var(--panel) 90%, black 10%);
     }
 
     /* ═══════════════════════════════════════
@@ -1030,19 +1068,56 @@
 
       <!-- TOOLS PANEL -->
       <div class="panel" id="toolsPanel">
-        <label>Text utilities — click to apply</label>
+        <label>Command Center — click to transform, analyze, and organize docs</label>
         <div class="tools-grid">
           <button class="btn" data-tool="trim">Trim whitespace</button>
+          <button class="btn" data-tool="cleanlines">Collapse blank lines</button>
+          <button class="btn" data-tool="dedup">Remove dup lines</button>
           <button class="btn" data-tool="title">Title Case</button>
+          <button class="btn" data-tool="sentence">Sentence case</button>
           <button class="btn" data-tool="upper">UPPERCASE</button>
           <button class="btn" data-tool="lower">lowercase</button>
           <button class="btn" data-tool="reverse">Reverse text</button>
-          <button class="btn" data-tool="dedup">Remove dup lines</button>
+          <button class="btn" data-tool="sortaz">Sort lines A→Z</button>
+          <button class="btn" data-tool="sortza">Sort lines Z→A</button>
+          <button class="btn" data-tool="slug">Slugify headings</button>
+          <button class="btn" data-tool="number">Number lines</button>
+          <button class="btn" data-tool="bullets">Bulletize lines</button>
+          <button class="btn" data-tool="stripemoji">Strip emoji/symbols</button>
+          <button class="btn" data-tool="extractemails">Extract emails</button>
+          <button class="btn" data-tool="extracturls">Extract URLs</button>
+          <button class="btn" data-tool="outline">Build smart outline</button>
+          <button class="btn" data-tool="meeting">Meeting notes format</button>
           <button class="btn" data-tool="estimate">Estimate run time</button>
-          <button class="btn" data-tool="copy">Copy to clipboard</button>
+          <button class="btn" data-tool="readtime">Reading time</button>
+          <button class="btn" data-tool="stats">Deep text stats</button>
+          </div>
+        <div class="studio-grid">
+          <div class="studio-card">
+            <h4>Template Forge</h4>
+            <div class="chip-row">
+              <button class="btn" data-template="proposal">Proposal</button>
+              <button class="btn" data-template="brief">Project Brief</button>
+              <button class="btn" data-template="checklist">Checklist</button>
+              <button class="btn" data-template="release">Release Notes</button>
+            </div>
+          </div>
+          <div class="studio-card">
+            <h4>Ops</h4>
+            <div class="chip-row">
+              <button class="btn" id="undoToolBtn">Undo last tool</button>
+              <button class="btn" id="downloadTxtBtn">Download .txt</button>
+              <button class="btn" id="loadSampleBtn">Load sample</button>
+              <button class="btn" data-tool="copy">Copy to clipboard</button>
+            </div>
+            <div class="chip-row">
+              <span class="pill">One-click transform stack</span>
+              <span class="pill">Doc workflow ready</span>
+            </div>
+          </div>
         </div>
         <div class="tool-feedback" id="toolFeedback">
-          Click any tool above to transform your text. Each action is immediate.
+          Build polished docs fast: clean, format, extract, outline, and prep content instantly.
         </div>
       </div>
 
@@ -1083,7 +1158,7 @@
       <span class="status-dot"></span>
       <span id="statusText">Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort</span>
     </div>
-    <div class="footer">AUTO TYPER PRO · 8 themes · humanized engine · live stats · session history · text tools</div>
+    <div class="footer">AUTO TYPER PRO · command center · template forge · analytics · session history · typing engine</div>
 
   </div><!-- /content -->
 </div><!-- /shell -->
@@ -1127,11 +1202,15 @@
   const lineCountEl         = document.getElementById("lineCount");
   const toolFeedbackEl      = document.getElementById("toolFeedback");
   const clearHistoryBtn     = document.getElementById("clearHistoryBtn");
+  const undoToolBtn         = document.getElementById("undoToolBtn");
+  const downloadTxtBtn      = document.getElementById("downloadTxtBtn");
+  const loadSampleBtn       = document.getElementById("loadSampleBtn");
 
   /* ── State ── */
   let typing    = false;
   let capturing = false;
   let histEmpty = true;
+  let toolHistory = [];
 
   /* ── Helpers ── */
   function num(el, fallback) {
@@ -1275,18 +1354,106 @@
     }
   });
 
+  function toSentenceCase(text) {
+    return text.toLowerCase().replace(/(^\s*[a-z]|[.!?]\s+[a-z])/g, m => m.toUpperCase());
+  }
+
+  function linesFromText() {
+    return textEl.value.split("\n");
+  }
+
+  function replaceLines(lines) {
+    textEl.value = lines.join("\n");
+    updateTextMeta();
+  }
+
+  function showToolMessage(button, msg, status = "done") {
+    toolFeedbackEl.className = "tool-feedback active";
+    toolFeedbackEl.textContent = msg;
+    setStatus(status, msg);
+    flashGlow(button);
+  }
+
+  function snapshotToolState() {
+    toolHistory.push(textEl.value);
+    if (toolHistory.length > 30) toolHistory.shift();
+  }
+
+  function applyTemplate(name) {
+    const now = new Date().toLocaleDateString();
+    const templates = {
+      proposal: `# Proposal
+
+## Objective
+
+## Scope
+
+## Success Metrics
+
+## Timeline
+
+## Risks
+
+## Next Steps
+Prepared: ${now}`,
+      brief: `# Project Brief
+
+## Context
+
+## Problem
+
+## Audience
+
+## Deliverables
+
+## Milestones
+
+## Owner` ,
+      checklist: `# Checklist
+
+- [ ] Define goal
+- [ ] Gather requirements
+- [ ] Draft content
+- [ ] Review with team
+- [ ] Publish` ,
+      release: `# Release Notes (${now})
+
+## Highlights
+- 
+
+## Improvements
+- 
+
+## Fixes
+- 
+
+## Known Issues
+- None`
+    };
+    return templates[name] || "";
+  }
+
   /* ── Tool buttons ── */
   document.querySelectorAll("[data-tool]").forEach(button => {
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
       const tool = button.dataset.tool;
       let msg = null;
+
+      snapshotToolState();
 
       if (tool === "trim") {
         textEl.value = textEl.value.replace(/[ \t]+/g, " ").replace(/\n[ \t]+/g, "\n").trim();
         msg = "Whitespace trimmed and normalized.";
+      } else if (tool === "cleanlines") {
+        const before = textEl.value.length;
+        textEl.value = textEl.value.replace(/\n{3,}/g, "\n\n").trim();
+        msg = `Collapsed heavy spacing (${Math.max(0, before - textEl.value.length)} chars removed).`;
       } else if (tool === "title") {
         textEl.value = textEl.value.toLowerCase().replace(/\b\w/g, m => m.toUpperCase());
         msg = "Text converted to Title Case.";
+      } else if (tool === "sentence") {
+        textEl.value = toSentenceCase(textEl.value);
+        msg = "Text converted to sentence case.";
       } else if (tool === "upper") {
         textEl.value = textEl.value.toUpperCase();
         msg = "Text converted to UPPERCASE.";
@@ -1297,22 +1464,94 @@
         textEl.value = textEl.value.split("").reverse().join("");
         msg = "Text reversed character by character.";
       } else if (tool === "dedup") {
-        const lines = textEl.value.split("\n");
+        const lines = linesFromText();
         const seen = new Set();
         const deduped = lines.filter(l => { const k = l.trim(); if (seen.has(k)) return false; seen.add(k); return true; });
         const removed = lines.length - deduped.length;
-        textEl.value = deduped.join("\n");
+        replaceLines(deduped);
         msg = `Removed ${removed} duplicate line${removed !== 1 ? "s" : ""}.`;
+      } else if (tool === "sortaz" || tool === "sortza") {
+        const lines = linesFromText().filter(Boolean);
+        lines.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base", numeric: true }));
+        if (tool === "sortza") lines.reverse();
+        replaceLines(lines);
+        msg = `Lines sorted ${tool === "sortaz" ? "A→Z" : "Z→A"}.`;
+      } else if (tool === "slug") {
+        const lines = linesFromText().map(line => line
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9\s-]/g, "")
+          .trim()
+          .replace(/\s+/g, "-")
+        );
+        replaceLines(lines);
+        msg = "Converted lines into URL/document slugs.";
+      } else if (tool === "number") {
+        const lines = linesFromText().filter(line => line.trim());
+        replaceLines(lines.map((line, i) => `${i + 1}. ${line.replace(/^\d+[.)-]?\s*/, "")}`));
+        msg = "Converted content into numbered list format.";
+      } else if (tool === "bullets") {
+        const lines = linesFromText().filter(line => line.trim());
+        replaceLines(lines.map(line => `• ${line.replace(/^[•\-*\d.\s]+/, "")}`));
+        msg = "Converted lines into clean bullet points.";
+      } else if (tool === "stripemoji") {
+        textEl.value = textEl.value.replace(/[\p{Extended_Pictographic}\p{S}]/gu, "");
+        msg = "Removed emoji and symbol glyphs for plain-text docs.";
+      } else if (tool === "extractemails") {
+        const matches = textEl.value.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
+        const unique = [...new Set(matches.map(m => m.toLowerCase()))];
+        textEl.value = unique.join("\n");
+        msg = `Extracted ${unique.length} unique email${unique.length !== 1 ? "s" : ""}.`;
+      } else if (tool === "extracturls") {
+        const matches = textEl.value.match(/https?:\/\/[^\s)]+/gi) || [];
+        const unique = [...new Set(matches)];
+        textEl.value = unique.join("\n");
+        msg = `Extracted ${unique.length} URL${unique.length !== 1 ? "s" : ""}.`;
+      } else if (tool === "outline") {
+        const lines = linesFromText().filter(line => line.trim());
+        const outlined = lines.map((line, i) => {
+          const level = Math.min(3, Math.floor(line.length / 40) + 1);
+          return `${"  ".repeat(level - 1)}${i + 1}.${"0".repeat(level - 1)} ${line.trim()}`;
+        });
+        replaceLines(outlined);
+        msg = "Built a structured outline from current content.";
+      } else if (tool === "meeting") {
+        const lines = linesFromText().filter(line => line.trim());
+        const decisions = lines.filter(l => /decide|approved|ship|resolved/i.test(l));
+        const actions = lines.filter(l => /todo|action|follow up|owner|next/i.test(l));
+        textEl.value = [
+          "# Meeting Notes",
+          "",
+          "## Summary",
+          lines.slice(0, 3).map(l => `- ${l}`).join("\n") || "- Add summary",
+          "",
+          "## Decisions",
+          decisions.length ? decisions.map(l => `- ${l}`).join("\n") : "- None captured",
+          "",
+          "## Action Items",
+          actions.length ? actions.map((l, i) => `${i + 1}. ${l}`).join("\n") : "1. Add owners and due dates",
+        ].join("\n");
+        msg = "Converted notes into a polished meeting-doc template.";
       } else if (tool === "estimate") {
         const cps = Number.parseFloat(speedEl.value) || 20;
         const chars = textEl.value.length;
         const seconds = chars / Math.max(cps, 1);
         const wpm = Math.round((cps / 5) * 60);
-        msg = `${chars.toLocaleString()} chars · ~${seconds.toFixed(1)}s · ~${Math.round(seconds/60)} min · ${wpm} WPM target`;
-        setStatus("done", `Estimated: ${seconds.toFixed(1)}s · ${wpm} WPM · ~${Math.round(seconds/60)} min`);
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        flashGlow(button);
+        showToolMessage(button, `Estimated: ${chars.toLocaleString()} chars · ${seconds.toFixed(1)}s · ${wpm} WPM · ~${Math.round(seconds/60)} min`);
+        return;
+      } else if (tool === "readtime") {
+        const words = textEl.value.trim() ? textEl.value.trim().split(/\s+/).length : 0;
+        const minutes = words / 220;
+        showToolMessage(button, `${words.toLocaleString()} words · ~${minutes.toFixed(1)} min read @ 220 WPM`);
+        return;
+      } else if (tool === "stats") {
+        const text = textEl.value;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const lines = text ? text.split("\n").length : 0;
+        const paragraphs = text.trim() ? text.trim().split(/\n\s*\n/).length : 0;
+        const uniqueWords = new Set((text.toLowerCase().match(/[a-z0-9']+/g) || []));
+        showToolMessage(button, `Chars ${text.length.toLocaleString()} · Words ${words.toLocaleString()} · Lines ${lines} · Paragraphs ${paragraphs} · Unique words ${uniqueWords.size.toLocaleString()}`);
         return;
       } else if (tool === "copy") {
         if (!textEl.value) {
@@ -1329,25 +1568,71 @@
           document.execCommand("copy");
           document.body.removeChild(ta);
           msg = `Copied ${textEl.value.length.toLocaleString()} chars to clipboard.`;
-          setStatus("done", msg);
         } catch {
           toolFeedbackEl.textContent = "Clipboard unavailable — use Ctrl+A, Ctrl+C in the text box.";
           return;
         }
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        flashGlow(button);
+        showToolMessage(button, msg);
         return;
       }
 
       if (msg) {
         updateTextMeta();
-        toolFeedbackEl.className = "tool-feedback active";
-        toolFeedbackEl.textContent = msg;
-        setStatus("done", msg);
-        flashGlow(button);
+        showToolMessage(button, msg);
       }
     });
+  });
+
+  document.querySelectorAll("[data-template]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      snapshotToolState();
+      const content = applyTemplate(btn.dataset.template);
+      if (!content) return;
+      textEl.value = content;
+      updateTextMeta();
+      showToolMessage(btn, `${btn.textContent} template loaded.`);
+    });
+  });
+
+  undoToolBtn?.addEventListener("click", () => {
+    if (!toolHistory.length) {
+      toolFeedbackEl.className = "tool-feedback";
+      toolFeedbackEl.textContent = "Nothing to undo yet.";
+      return;
+    }
+    textEl.value = toolHistory.pop();
+    updateTextMeta();
+    showToolMessage(undoToolBtn, "Reverted last tool action.");
+  });
+
+  downloadTxtBtn?.addEventListener("click", () => {
+    if (!textEl.value.trim()) {
+      toolFeedbackEl.className = "tool-feedback";
+      toolFeedbackEl.textContent = "No content to download yet.";
+      return;
+    }
+    const blob = new Blob([textEl.value], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `autotyper-doc-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToolMessage(downloadTxtBtn, "Downloaded .txt snapshot.");
+  });
+
+  loadSampleBtn?.addEventListener("click", () => {
+    snapshotToolState();
+    textEl.value = [
+      "Q4 launch review: approved onboarding flow.",
+      "Action: finalize release messaging by Friday.",
+      "Decision: ship analytics dashboard in phase two.",
+      "Owner: product + design alignment sync."
+    ].join("\n");
+    updateTextMeta();
+    showToolMessage(loadSampleBtn, "Loaded high-signal sample doc.");
   });
 
   /* ── Clear history ── */

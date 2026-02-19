@@ -8,8 +8,9 @@ A desktop auto-typer for Windows with advanced pacing controls, live run analyti
 - **WPM persistence control** to tune how tightly the typing speed adheres to your configured target.
 - **Live session analytics** including elapsed time, mistake count, lowest WPM, and highest WPM.
 - **Resizable window** with on-demand width/height controls in-app.
-- **Theme selector** (Cozy Bronze, Diamond Blue, Onyx Mono).
-- **Text tools panel** (trim spacing, title case, upper/lowercase, reverse, runtime estimate).
+- **Theme selector** (8 styles including Cozy, Diamond, Onyx, Synthwave, and more).
+- **Command Center tools panel** with 22 one-click operations for cleaning, formatting, extracting, and organizing docs.
+- **Doc-centric utilities** including sentence case, outline builder, meeting note formatter, slugify, line sorters, reading time, and deep text stats.
 - **Global hotkey** (F2 by default), plus Escape abort and always-on-top toggle.
 
 ## Setup
