@@ -1,35 +1,33 @@
-const { app, BrowserWindow, globalShortcut, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 
-let mainWindow = null;
-let currentHotkey = "F2";
+let mainWindow;
 let isTyping = false;
+let currentHotkey = "F2";
 let psProcess = null;
-
-// ── Window ──────────────────────────────────────────────────────────────────
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 560,
+    width: 560,
+    height: 680,
     resizable: false,
     frame: false,
     transparent: true,
+    alwaysOnTop: true,
+    backgroundColor: "#00000000",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
     },
   });
+
   mainWindow.loadFile("index.html");
   mainWindow.setAlwaysOnTop(true);
   mainWindow.on("closed", () => (mainWindow = null));
 }
-
-// ── Persistent PowerShell ───────────────────────────────────────────────────
-// ONE process stays alive for the app's lifetime. We pipe SendKeys commands
-// to its stdin, eliminating the ~150ms startup cost that caused jitter.
 
 function ensurePS() {
   if (psProcess && !psProcess.killed) return;
@@ -51,8 +49,6 @@ function sendKey(skStr) {
   });
 }
 
-// ── SendKeys char escaping ──────────────────────────────────────────────────
-
 const SK = {
   "+": "{+}", "^": "{^}", "%": "{%}", "~": "{~}",
   "(": "{(}", ")": "{)}", "{": "{{}", "}": "{}}", "[": "{[}", "]": "{]}",
@@ -60,14 +56,81 @@ const SK = {
 };
 const esc = (c) => (c in SK ? SK[c] : c);
 
-// ── Typing engine ───────────────────────────────────────────────────────────
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const rand = (min, max) => Math.random() * (max - min) + min;
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-async function doType(text, cps) {
+function buildHumanProfile(cps, options = {}) {
+  const baseCps = clamp(Number(cps) || 20, 1, 500);
+  const pauseEveryMin = clamp(Number(options.pauseEveryMin) || 1, 1, 15);
+  const pauseEveryMax = clamp(Number(options.pauseEveryMax) || 15, pauseEveryMin, 15);
+  const pauseMsMin = clamp(Number(options.pauseMsMin) || 80, 20, 5000);
+  const pauseMsMax = clamp(Number(options.pauseMsMax) || 420, pauseMsMin, 8000);
+
+  return {
+    enabled: options.humanized !== false,
+    pauseEveryMin,
+    pauseEveryMax,
+    pauseMsMin,
+    pauseMsMax,
+    burstChance: 0.16,
+    slowChance: 0.14,
+    punctuationPauseChance: 0.85,
+    punctuationExtraMin: 120,
+    punctuationExtraMax: 420,
+    wordPauseChance: 0.32,
+    wordPauseMin: 30,
+    wordPauseMax: 120,
+    baseMs: 1000 / baseCps,
+    typoChance: 0.018,
+  };
+}
+
+function nextDelay(ch, profile) {
+  let delay = profile.baseMs;
+
+  if (!profile.enabled) {
+    return delay;
+  }
+
+  if (Math.random() < profile.burstChance) {
+    delay *= rand(0.35, 0.75);
+  } else if (Math.random() < profile.slowChance) {
+    delay *= rand(1.35, 2.6);
+  } else {
+    delay *= rand(0.82, 1.2);
+  }
+
+  if (/[,.!?;:]/.test(ch) && Math.random() < profile.punctuationPauseChance) {
+    delay += rand(profile.punctuationExtraMin, profile.punctuationExtraMax);
+  }
+
+  if (ch === " " && Math.random() < profile.wordPauseChance) {
+    delay += rand(profile.wordPauseMin, profile.wordPauseMax);
+  }
+
+  return clamp(delay, 4, 4000);
+}
+
+async function maybeTypoFix(ch, profile) {
+  if (!profile.enabled) return;
+  if (!/[a-zA-Z]/.test(ch)) return;
+  if (Math.random() > profile.typoChance) return;
+
+  const wrong = Math.random() > 0.5 ? "x" : "e";
+  await sendKey(wrong);
+  await sleep(rand(25, 120));
+  await sendKey("{BACKSPACE}");
+  await sleep(rand(45, 150));
+}
+
+async function doType(text, cps, options = {}) {
   isTyping = true;
   const len = text.length;
-  mainWindow?.webContents.send("typing-status", { state: "typing", total: len, done: 0 });
+  const profile = buildHumanProfile(cps, options);
+  let charsUntilPause = Math.floor(rand(profile.pauseEveryMin, profile.pauseEveryMax + 1));
 
-  const msPerChar = 1000 / cps;
+  mainWindow?.webContents.send("typing-status", { state: "typing", total: len, done: 0 });
 
   for (let i = 0; i < len; i++) {
     if (!isTyping) {
@@ -75,11 +138,14 @@ async function doType(text, cps) {
       return;
     }
 
-    const ch = esc(text[i]);
+    const rawCh = text[i];
+    const ch = esc(rawCh);
     if (ch === "") continue;
 
     const t0 = Date.now();
+
     try {
+      await maybeTypoFix(rawCh, profile);
       await sendKey(ch);
     } catch (_e) {
       mainWindow?.webContents.send("typing-status", { state: "error" });
@@ -87,41 +153,53 @@ async function doType(text, cps) {
       return;
     }
 
-    // Progress updates (throttled)
-    if (i % 4 === 0) {
+    if (i % 3 === 0 || i === len - 1) {
       mainWindow?.webContents.send("typing-status", { state: "typing", total: len, done: i + 1 });
     }
 
-    // Sleep remainder to maintain target CPS
-    const wait = msPerChar - (Date.now() - t0);
-    if (wait > 2) await new Promise((r) => setTimeout(r, wait));
+    charsUntilPause -= 1;
+    if (profile.enabled && charsUntilPause <= 0) {
+      await sleep(rand(profile.pauseMsMin, profile.pauseMsMax));
+      charsUntilPause = Math.floor(rand(profile.pauseEveryMin, profile.pauseEveryMax + 1));
+    }
+
+    const wait = nextDelay(rawCh, profile) - (Date.now() - t0);
+    if (wait > 2) {
+      await sleep(wait);
+    }
   }
 
   isTyping = false;
   mainWindow?.webContents.send("typing-status", { state: "done", total: len, done: len });
 }
 
-// ── Hotkey management ───────────────────────────────────────────────────────
-
 function registerHotkey(key) {
   globalShortcut.unregisterAll();
   currentHotkey = key;
 
   const ok = globalShortcut.register(key, () => {
-    if (isTyping) { isTyping = false; return; }
+    if (isTyping) {
+      isTyping = false;
+      return;
+    }
     mainWindow?.webContents.send("request-text");
   });
 
-  globalShortcut.register("Escape", () => { if (isTyping) isTyping = false; });
+  globalShortcut.register("Escape", () => {
+    if (isTyping) isTyping = false;
+  });
   return ok;
 }
 
-// ── IPC ─────────────────────────────────────────────────────────────────────
-
 ipcMain.handle("register-hotkey", (_e, key) => registerHotkey(key));
 
-ipcMain.on("start-typing", (_e, { text, speed }) => {
-  if (!isTyping && text.trim()) setTimeout(() => doType(text, speed), 400);
+ipcMain.on("start-typing", (_e, payload) => {
+  const text = payload?.text || "";
+  const speed = payload?.speed;
+  const options = payload?.options || {};
+  if (!isTyping && text.trim()) {
+    setTimeout(() => doType(text, speed, options), 400);
+  }
 });
 
 ipcMain.on("stop-typing", () => (isTyping = false));
@@ -135,8 +213,6 @@ ipcMain.handle("toggle-aot", () => {
   return next;
 });
 
-// ── Lifecycle ───────────────────────────────────────────────────────────────
-
 app.whenReady().then(() => {
   createWindow();
   registerHotkey(currentHotkey);
@@ -145,7 +221,10 @@ app.whenReady().then(() => {
 
 app.on("will-quit", () => {
   globalShortcut.unregisterAll();
-  if (psProcess && !psProcess.killed) { psProcess.stdin.end(); psProcess.kill(); }
+  if (psProcess && !psProcess.killed) {
+    psProcess.stdin.end();
+    psProcess.kill();
+  }
 });
 
 app.on("window-all-closed", () => app.quit());

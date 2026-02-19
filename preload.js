@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
   registerHotkey: (key) => ipcRenderer.invoke("register-hotkey", key),
-  startTyping: (text, speed) => ipcRenderer.send("start-typing", { text, speed }),
+  startTyping: (text, speed, options) => ipcRenderer.send("start-typing", { text, speed, options }),
   stopTyping: () => ipcRenderer.send("stop-typing"),
   minimize: () => ipcRenderer.send("minimize-window"),
   close: () => ipcRenderer.send("close-window"),
