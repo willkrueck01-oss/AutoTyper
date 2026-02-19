@@ -1,16 +1,16 @@
 # ✦ Auto Typer
 
-A space-themed auto-typer that simulates keyboard input in any Windows app. Uses a persistent PowerShell process for smooth, jitter-free character-by-character typing.
+A minimalist black-and-white auto-typer that simulates keyboard input in any Windows app. Uses a persistent PowerShell process for smooth, jitter-free character-by-character typing.
 
 ## Features
 
-- **Smooth letter-by-letter typing** — persistent PS process, no per-keystroke startup lag
+- **Humanized letter-by-letter typing** — random bursts/slows, punctuation pauses, and occasional typo correction
 - **Global hotkey** (F2 default) — works even when the app isn't focused
 - **Escape to stop** at any time
 - **Live progress bar** with percentage
 - **Rebindable hotkey** — click the field and press any key or combo
 - **Always-on-top** toggle
-- **Animated starfield** UI with nebula glow effects
+- **Clean monochrome UI** with focused controls and no visual clutter
 
 ## Setup
 

@@ -2,339 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
   <title>Auto Typer</title>
   <style>
-
     :root {
-      --void: #06060e;
-      --deep: #0a0a18;
-      --panel: rgba(8, 10, 28, 0.85);
-      --border: rgba(80, 140, 255, 0.12);
-      --border-glow: rgba(80, 140, 255, 0.25);
-      --cyan: #4af5ff;
-      --magenta: #e44fff;
-      --violet: #8b5cf6;
-      --star: #c8deff;
-      --text: #c8d8f0;
-      --dim: #4a5578;
-      --input-bg: rgba(6, 6, 20, 0.7);
-      --danger: #ff4a6a;
-      --success: #4af5c2;
+      --bg: #090909;
+      --panel: #111111;
+      --line: #2a2a2a;
+      --line-strong: #444444;
+      --text: #f4f4f4;
+      --muted: #a3a3a3;
+      --ok: #f4f4f4;
+      --warn: #d8d8d8;
+      --danger: #ffffff;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Share Tech Mono', monospace;
+      font-family: "Segoe UI", Arial, sans-serif;
       background: transparent;
       color: var(--text);
-      overflow: hidden;
       user-select: none;
     }
 
-    /* ── Outer shell with rounded corners ─── */
     .shell {
-      width: 100vw;
       height: 100vh;
-      border-radius: 16px;
+      width: 100vw;
+      background: var(--bg);
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
       overflow: hidden;
-      position: relative;
-      border: 1px solid var(--border-glow);
-      background: var(--void);
+      display: flex;
+      flex-direction: column;
     }
 
-    /* ── Starfield canvas ────────────────── */
-    #stars {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* ── Nebula glow overlays ────────────── */
-    .nebula {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.15;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .nebula.a { width: 300px; height: 300px; background: var(--cyan); top: -80px; right: -60px; }
-    .nebula.b { width: 250px; height: 250px; background: var(--magenta); bottom: -60px; left: -40px; }
-    .nebula.c { width: 180px; height: 180px; background: var(--violet); top: 50%; left: 50%; transform: translate(-50%,-50%); opacity: 0.08; }
-
-    /* ── Title bar ───────────────────────── */
     .titlebar {
-      position: relative;
-      z-index: 2;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px 0;
+      padding: 0 10px 0 14px;
+      border-bottom: 1px solid var(--line);
       -webkit-app-region: drag;
+      background: #0d0d0d;
     }
+
     .brand {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 11px;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      color: var(--text);
       font-weight: 700;
-      letter-spacing: 0.2em;
-      background: linear-gradient(135deg, var(--cyan), var(--magenta));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(74, 245, 255, 0.3);
     }
-    .brand::before {
-      content: '✦ ';
-      -webkit-text-fill-color: var(--cyan);
-      font-size: 9px;
-    }
+
     .wcontrols {
       display: flex;
       gap: 6px;
       -webkit-app-region: no-drag;
     }
-    .wcontrols button {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--dim);
-      width: 26px; height: 26px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
-    .wcontrols button:hover { background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--border-glow); }
-    .wcontrols .close:hover { background: rgba(255,70,106,0.15); color: var(--danger); border-color: rgba(255,70,106,0.3); }
 
-    /* ── Content ─────────────────────────── */
+    .wcontrols button {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #131313;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .wcontrols button:hover { border-color: var(--line-strong); background: #181818; }
+
     .content {
-      position: relative;
-      z-index: 2;
-      padding: 14px 18px 18px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       -webkit-app-region: no-drag;
     }
 
     label {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 9px;
-      color: var(--dim);
-      letter-spacing: 0.16em;
+      font-size: 11px;
       text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    textarea,
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      padding: 9px 10px;
+      font-size: 13px;
+      outline: none;
     }
 
     textarea {
-      display: block;
-      width: 100%;
-      margin: 6px 0 14px;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12.5px;
-      padding: 10px 12px;
+      min-height: 135px;
       resize: vertical;
-      min-height: 110px;
-      max-height: 200px;
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
-      line-height: 1.5;
-    }
-    textarea::placeholder { color: var(--dim); font-size: 11px; }
-    textarea:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(74,245,255,0.08), inset 0 0 20px rgba(74,245,255,0.03);
+      max-height: 220px;
+      line-height: 1.4;
     }
 
-    .row {
-      display: flex;
+    textarea:focus,
+    input:focus { border-color: var(--line-strong); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 14px;
-    }
-    .row > div { flex: 1; }
-
-    input[type="number"],
-    input[type="text"] {
-      display: block;
-      width: 100%;
-      margin-top: 5px;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      padding: 8px 10px;
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    input:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 16px rgba(74,245,255,0.08);
     }
 
     .hotkey-input {
-      color: var(--cyan) !important;
-      cursor: pointer;
       text-align: center;
+      cursor: pointer;
       caret-color: transparent;
-    }
-    .hotkey-input.capturing {
-      color: var(--magenta) !important;
-      border-color: var(--magenta) !important;
-      box-shadow: 0 0 20px rgba(228,79,255,0.15) !important;
-      animation: pulse 1.2s ease-in-out infinite;
+      font-weight: 600;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+    .hotkey-input.capturing { border-color: #888; }
+
+    .row-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 9px 10px;
+      background: #0e0e0e;
     }
 
-    /* ── Buttons ──────────────────────────── */
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input[type="checkbox"] {
+      accent-color: #ffffff;
+      width: 16px;
+      height: 16px;
+    }
+
     .actions {
       display: flex;
       gap: 8px;
-      margin-top: 4px;
     }
 
-    .btn-launch {
-      flex: 1;
-      position: relative;
-      background: linear-gradient(135deg, rgba(74,245,255,0.15), rgba(139,92,246,0.15));
-      border: 1px solid rgba(74,245,255,0.3);
-      color: var(--cyan);
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
+    .btn {
+      border: 1px solid var(--line);
+      background: #141414;
+      color: var(--text);
+      border-radius: 9px;
+      padding: 10px;
       font-size: 12px;
-      letter-spacing: 0.1em;
-      padding: 11px;
-      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.25s;
-      overflow: hidden;
+      font-weight: 700;
+      letter-spacing: 0.05em;
     }
-    .btn-launch::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--cyan), var(--violet));
-      opacity: 0;
-      transition: opacity 0.25s;
-      z-index: 0;
-    }
-    .btn-launch span { position: relative; z-index: 1; }
-    .btn-launch:hover::before { opacity: 0.2; }
-    .btn-launch:hover { border-color: var(--cyan); box-shadow: 0 0 25px rgba(74,245,255,0.15); }
-    .btn-launch:active { transform: scale(0.97); }
+
+    .btn:hover { border-color: var(--line-strong); background: #1a1a1a; }
+
+    .btn-launch { flex: 1; }
 
     .btn-launch.stop {
-      background: linear-gradient(135deg, rgba(255,74,106,0.15), rgba(255,74,106,0.05));
-      border-color: rgba(255,74,106,0.4);
-      color: var(--danger);
+      border-color: #777;
+      background: #1d1d1d;
     }
-    .btn-launch.stop::before { background: var(--danger); }
-    .btn-launch.stop:hover { box-shadow: 0 0 25px rgba(255,74,106,0.15); }
 
-    .btn-pin {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      color: var(--dim);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      padding: 11px 13px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .btn-pin:hover { background: rgba(255,255,255,0.06); color: var(--text); }
-    .btn-pin.active { color: var(--cyan); border-color: rgba(74,245,255,0.25); }
-
-    /* ── Progress bar ────────────────────── */
     .progress-wrap {
-      margin-top: 14px;
-      height: 3px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 3px;
+      margin-top: 2px;
+      height: 5px;
+      border-radius: 999px;
+      background: #1a1a1a;
       overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--cyan), var(--magenta));
-      border-radius: 3px;
-      transition: width 0.15s linear;
-      box-shadow: 0 0 10px rgba(74,245,255,0.4);
+      border: 1px solid var(--line);
     }
 
-    /* ── Status ───────────────────────────── */
-    .status {
-      margin-top: 10px;
-      font-size: 11px;
-      min-height: 16px;
-      padding: 9px 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      text-align: center;
-      transition: all 0.3s;
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #ffffff;
+      transition: width 0.15s linear;
     }
-    .status.idle { color: var(--dim); }
-    .status.typing { color: var(--cyan); border-color: rgba(74,245,255,0.15); }
-    .status.done { color: var(--success); border-color: rgba(74,245,194,0.15); }
-    .status.error { color: var(--danger); border-color: rgba(255,74,106,0.15); }
-    .status.stopped { color: #ffaa57; border-color: rgba(255,170,87,0.15); }
+
+    .status {
+      border-radius: 9px;
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      font-size: 12px;
+      text-align: center;
+      color: var(--muted);
+      background: #0e0e0e;
+      min-height: 36px;
+    }
+
+    .status.typing,
+    .status.done,
+    .status.error,
+    .status.stopped { color: var(--text); border-color: var(--line-strong); }
 
     kbd {
-      background: rgba(255,255,255,0.06);
-      padding: 1px 6px;
+      border: 1px solid var(--line-strong);
+      background: #1a1a1a;
       border-radius: 4px;
-      font-size: 10px;
-      color: var(--cyan);
-      border: 1px solid var(--border);
-      font-family: 'Orbitron', sans-serif;
+      padding: 1px 5px;
+      font-size: 11px;
+      color: var(--text);
     }
 
-    /* ── Footer ───────────────────────────── */
     .footer {
-      margin-top: 12px;
-      font-size: 9px;
-      color: var(--dim);
+      margin-top: 2px;
+      font-size: 11px;
+      color: #888;
       text-align: center;
-      line-height: 1.6;
-      letter-spacing: 0.04em;
-      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 <div class="shell">
-  <canvas id="stars"></canvas>
-  <div class="nebula a"></div>
-  <div class="nebula b"></div>
-  <div class="nebula c"></div>
-
   <div class="titlebar">
     <span class="brand">AUTO TYPER</span>
     <div class="wcontrols">
-      <button class="min" onclick="window.api.minimize()" title="Minimize">─</button>
-      <button class="close" onclick="window.api.close()" title="Close">✕</button>
+      <button onclick="window.api.minimize()" title="Minimize">─</button>
+      <button onclick="window.api.close()" title="Close">✕</button>
     </div>
   </div>
 
   <div class="content">
-    <label for="text">Transmission</label>
-    <textarea id="text" placeholder="Enter text payload..." spellcheck="false"></textarea>
+    <div>
+      <label for="text">Text</label>
+      <textarea id="text" placeholder="Type or paste text..." spellcheck="false"></textarea>
+    </div>
 
-    <div class="row">
+    <div class="grid">
       <div>
-        <label for="speed">Chars / sec</label>
-        <input type="number" id="speed" value="20" min="1" max="500" step="5" />
+        <label for="speed">Base chars/sec</label>
+        <input type="number" id="speed" value="20" min="1" max="500" step="1" />
       </div>
       <div>
         <label for="hotkey">Hotkey</label>
@@ -342,73 +255,56 @@
       </div>
     </div>
 
+    <div class="row-inline">
+      <div class="checkbox-wrap">
+        <input type="checkbox" id="humanized" checked />
+        <label for="humanized" style="margin:0;">Humanized timing</label>
+      </div>
+      <button class="btn" id="aotBtn" title="Always on top">AOT ON</button>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="pauseEveryMin">Pause every (min chars)</label>
+        <input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" />
+      </div>
+      <div>
+        <label for="pauseEveryMax">Pause every (max chars)</label>
+        <input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" />
+      </div>
+      <div>
+        <label for="pauseMsMin">Pause length min (ms)</label>
+        <input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" />
+      </div>
+      <div>
+        <label for="pauseMsMax">Pause length max (ms)</label>
+        <input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" />
+      </div>
+    </div>
+
     <div class="actions">
-      <button class="btn-launch" id="startBtn"><span>▸ LAUNCH</span></button>
-      <button class="btn-pin active" id="aotBtn" title="Always on top">📌 AOT</button>
+      <button class="btn btn-launch" id="startBtn">START</button>
     </div>
 
     <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
 
     <div class="status idle" id="status">
-      Press <kbd>F2</kbd> in target window to transmit · <kbd>ESC</kbd> to abort
+      Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort
     </div>
 
-    <div class="footer">
-      focus target → press hotkey → characters transmit one by one
-    </div>
+    <div class="footer">Black + white UI • variable speed bursts • random pauses • occasional typo corrections</div>
   </div>
 </div>
 
 <script>
-// ── Starfield ──────────────────────────────────────────────────────────────
-(function initStars() {
-  const canvas = document.getElementById("stars");
-  const ctx = canvas.getContext("2d");
-  let w, h, stars = [];
-  const COUNT = 90;
-
-  function resize() {
-    w = canvas.width = canvas.offsetWidth;
-    h = canvas.height = canvas.offsetHeight;
-  }
-
-  function spawn() {
-    stars = [];
-    for (let i = 0; i < COUNT; i++) {
-      stars.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: Math.random() * 1.2 + 0.3,
-        a: Math.random(),
-        da: (Math.random() - 0.5) * 0.008,
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    for (const s of stars) {
-      s.a += s.da;
-      if (s.a > 1 || s.a < 0.1) s.da *= -1;
-      s.a = Math.max(0.08, Math.min(1, s.a));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200, 222, 255, ${s.a})`;
-      ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  spawn();
-  draw();
-  window.addEventListener("resize", () => { resize(); spawn(); });
-})();
-
-// ── Elements ───────────────────────────────────────────────────────────────
 const textEl = document.getElementById("text");
 const speedEl = document.getElementById("speed");
 const hotkeyEl = document.getElementById("hotkey");
+const humanizedEl = document.getElementById("humanized");
+const pauseEveryMinEl = document.getElementById("pauseEveryMin");
+const pauseEveryMaxEl = document.getElementById("pauseEveryMax");
+const pauseMsMinEl = document.getElementById("pauseMsMin");
+const pauseMsMaxEl = document.getElementById("pauseMsMax");
 const startBtn = document.getElementById("startBtn");
 const aotBtn = document.getElementById("aotBtn");
 const statusEl = document.getElementById("status");
@@ -417,7 +313,28 @@ const progressEl = document.getElementById("progress");
 let typing = false;
 let capturing = false;
 
-// ── Hotkey capture ─────────────────────────────────────────────────────────
+function num(el, fallback) {
+  const parsed = Number.parseInt(el.value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function syncPauseRanges() {
+  const minChars = Math.max(1, Math.min(15, num(pauseEveryMinEl, 1)));
+  const maxChars = Math.max(minChars, Math.min(15, num(pauseEveryMaxEl, 15)));
+  pauseEveryMinEl.value = minChars;
+  pauseEveryMaxEl.value = maxChars;
+
+  const minMs = Math.max(20, Math.min(5000, num(pauseMsMinEl, 80)));
+  const maxMs = Math.max(minMs, Math.min(8000, num(pauseMsMaxEl, 420)));
+  pauseMsMinEl.value = minMs;
+  pauseMsMaxEl.value = maxMs;
+}
+
+pauseEveryMinEl.addEventListener("change", syncPauseRanges);
+pauseEveryMaxEl.addEventListener("change", syncPauseRanges);
+pauseMsMinEl.addEventListener("change", syncPauseRanges);
+pauseMsMaxEl.addEventListener("change", syncPauseRanges);
+
 hotkeyEl.addEventListener("click", () => {
   capturing = true;
   hotkeyEl.value = "...";
@@ -437,7 +354,7 @@ document.addEventListener("keydown", async (e) => {
     statusEl.innerHTML = `Failed to bind <kbd>${key}</kbd> — try another`;
   } else {
     statusEl.className = "status idle";
-    statusEl.innerHTML = `Press <kbd>${key}</kbd> in target window to transmit · <kbd>ESC</kbd> to abort`;
+    statusEl.innerHTML = `Press <kbd>${key}</kbd> in target window to type · <kbd>ESC</kbd> to abort`;
   }
 });
 
@@ -446,32 +363,45 @@ function mapKey(e) {
   let key = map[e.key] || e.key;
   if (/^F\d+$/.test(key)) return key;
   if (key.length === 1) key = key.toUpperCase();
-  let a = "";
-  if (e.ctrlKey) a += "CommandOrControl+";
-  if (e.altKey) a += "Alt+";
-  if (e.shiftKey && key.length > 1) a += "Shift+";
-  return a + key;
+  let combo = "";
+  if (e.ctrlKey) combo += "CommandOrControl+";
+  if (e.altKey) combo += "Alt+";
+  if (e.shiftKey && key.length > 1) combo += "Shift+";
+  return combo + key;
 }
 
-// ── Start / stop ───────────────────────────────────────────────────────────
 startBtn.addEventListener("click", () => {
-  if (typing) window.api.stopTyping();
-  else sendText();
+  if (typing) {
+    window.api.stopTyping();
+  } else {
+    sendText();
+  }
 });
 
 function sendText() {
   const text = textEl.value;
-  const speed = parseFloat(speedEl.value) || 20;
+  const speed = Number.parseFloat(speedEl.value) || 20;
+  syncPauseRanges();
+
   if (!text.trim()) {
     statusEl.className = "status error";
-    statusEl.textContent = "No payload entered.";
+    statusEl.textContent = "No text entered.";
     return;
   }
+
   progressEl.style.width = "0%";
-  window.api.startTyping(text, speed);
+
+  const options = {
+    humanized: humanizedEl.checked,
+    pauseEveryMin: num(pauseEveryMinEl, 1),
+    pauseEveryMax: num(pauseEveryMaxEl, 15),
+    pauseMsMin: num(pauseMsMinEl, 80),
+    pauseMsMax: num(pauseMsMaxEl, 420),
+  };
+
+  window.api.startTyping(text, speed, options);
 }
 
-// ── IPC ────────────────────────────────────────────────────────────────────
 window.api.onRequestText(() => sendText());
 
 window.api.onTypingStatus((d) => {
@@ -479,50 +409,49 @@ window.api.onTypingStatus((d) => {
   switch (d.state) {
     case "typing":
       typing = true;
-      startBtn.innerHTML = "<span>■ ABORT</span>";
+      startBtn.textContent = "STOP";
       startBtn.classList.add("stop");
       statusEl.className = "status typing";
       if (d.total) {
         const pct = Math.round((d.done / d.total) * 100);
-        statusEl.textContent = `Transmitting... ${pct}%`;
+        statusEl.textContent = `Typing... ${pct}%`;
         progressEl.style.width = pct + "%";
       } else {
-        statusEl.textContent = "Transmitting...";
+        statusEl.textContent = "Typing...";
       }
       break;
     case "done":
       typing = false;
-      startBtn.innerHTML = "<span>▸ LAUNCH</span>";
+      startBtn.textContent = "START";
       startBtn.classList.remove("stop");
       statusEl.className = "status done";
-      statusEl.innerHTML = `Transmission complete · press <kbd>${key}</kbd> to repeat`;
+      statusEl.innerHTML = `Done · press <kbd>${key}</kbd> to run again`;
       progressEl.style.width = "100%";
-      setTimeout(() => { progressEl.style.width = "0%"; }, 2000);
+      setTimeout(() => { progressEl.style.width = "0%"; }, 1800);
       break;
     case "stopped":
       typing = false;
-      startBtn.innerHTML = "<span>▸ LAUNCH</span>";
+      startBtn.textContent = "START";
       startBtn.classList.remove("stop");
       statusEl.className = "status stopped";
-      statusEl.textContent = "Transmission aborted.";
+      statusEl.textContent = "Typing stopped.";
       progressEl.style.width = "0%";
       break;
     case "error":
       typing = false;
-      startBtn.innerHTML = "<span>▸ LAUNCH</span>";
+      startBtn.textContent = "START";
       startBtn.classList.remove("stop");
       statusEl.className = "status error";
-      statusEl.textContent = "Signal lost — is a window focused?";
+      statusEl.textContent = "Failed to send keys. Make sure a target window is focused.";
       progressEl.style.width = "0%";
       break;
   }
 });
 
-// ── AOT toggle ─────────────────────────────────────────────────────────────
 let aot = true;
 aotBtn.addEventListener("click", async () => {
   aot = await window.api.toggleAOT();
-  aotBtn.classList.toggle("active", aot);
+  aotBtn.textContent = aot ? "AOT ON" : "AOT OFF";
 });
 </script>
 </body>
