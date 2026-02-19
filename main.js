@@ -9,9 +9,11 @@ let psProcess = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 520,
-    height: 620,
-    resizable: false,
+    width: 980,
+    height: 760,
+    minWidth: 760,
+    minHeight: 620,
+    resizable: true,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -70,8 +72,10 @@ function buildHumanProfile(cps, options = {}) {
   const startupDelayMax = clamp(Number(options.startupDelayMax) || 750, startupDelayMin, 10000);
   const typoRatePercent = clamp(Number(options.typoRatePercent) || 2, 0, 12);
   const correctionSpeed = clamp(Number(options.correctionSpeed) || 3, 1, 5);
+  const persistencePercent = clamp(Number(options.persistencePercent) || 65, 0, 100);
 
   const speedScale = 2.1 - correctionSpeed * 0.32;
+  const stability = persistencePercent / 100;
 
   return {
     enabled: options.humanized !== false,
@@ -81,20 +85,22 @@ function buildHumanProfile(cps, options = {}) {
     pauseMsMax,
     startupDelayMin,
     startupDelayMax,
-    burstChance: 0.16,
-    slowChance: 0.14,
-    punctuationPauseChance: 0.85,
-    punctuationExtraMin: 120,
-    punctuationExtraMax: 420,
-    wordPauseChance: 0.32,
-    wordPauseMin: 30,
-    wordPauseMax: 120,
+    burstChance: 0.28 - stability * 0.18,
+    slowChance: 0.3 - stability * 0.18,
+    punctuationPauseChance: 0.95 - stability * 0.25,
+    punctuationExtraMin: 90,
+    punctuationExtraMax: 340,
+    wordPauseChance: 0.42 - stability * 0.28,
+    wordPauseMin: 20,
+    wordPauseMax: 110,
     baseMs: 1000 / baseCps,
     typoChance: typoRatePercent / 100,
     correctionDelayMin: clamp(25 * speedScale, 8, 80),
     correctionDelayMax: clamp(120 * speedScale, 25, 220),
     postCorrectionMin: clamp(45 * speedScale, 12, 95),
     postCorrectionMax: clamp(150 * speedScale, 35, 260),
+    minVariance: clamp(0.9 - stability * 0.2, 0.7, 0.95),
+    maxVariance: clamp(1.3 - stability * 0.18, 0.95, 1.3),
   };
 }
 
@@ -106,11 +112,11 @@ function nextDelay(ch, profile) {
   }
 
   if (Math.random() < profile.burstChance) {
-    delay *= rand(0.35, 0.75);
+    delay *= rand(0.5, 0.82);
   } else if (Math.random() < profile.slowChance) {
-    delay *= rand(1.35, 2.6);
+    delay *= rand(1.2, 2.2);
   } else {
-    delay *= rand(0.82, 1.2);
+    delay *= rand(profile.minVariance, profile.maxVariance);
   }
 
   if (/[,.!?;:]/.test(ch) && Math.random() < profile.punctuationPauseChance) {
@@ -125,15 +131,41 @@ function nextDelay(ch, profile) {
 }
 
 async function maybeTypoFix(ch, profile) {
-  if (!profile.enabled) return;
-  if (!/[a-zA-Z]/.test(ch)) return;
-  if (Math.random() > profile.typoChance) return;
+  if (!profile.enabled) return false;
+  if (!/[a-zA-Z]/.test(ch)) return false;
+  if (Math.random() > profile.typoChance) return false;
 
   const wrong = Math.random() > 0.5 ? "x" : "e";
   await sendKey(wrong);
   await sleep(rand(profile.correctionDelayMin, profile.correctionDelayMax));
   await sendKey("{BACKSPACE}");
   await sleep(rand(profile.postCorrectionMin, profile.postCorrectionMax));
+  return true;
+}
+
+function baseStats(total) {
+  return {
+    total,
+    done: 0,
+    mistakes: 0,
+    elapsedMs: 0,
+    minWpm: null,
+    maxWpm: null,
+    avgWpm: 0,
+  };
+}
+
+function emitTypingProgress(stats, state = "typing") {
+  mainWindow?.webContents.send("typing-status", {
+    state,
+    total: stats.total,
+    done: stats.done,
+    mistakes: stats.mistakes,
+    elapsedMs: stats.elapsedMs,
+    minWpm: stats.minWpm,
+    maxWpm: stats.maxWpm,
+    avgWpm: stats.avgWpm,
+  });
 }
 
 async function doType(text, cps, options = {}) {
@@ -142,11 +174,16 @@ async function doType(text, cps, options = {}) {
   const profile = buildHumanProfile(cps, options);
   let charsUntilPause = Math.floor(rand(profile.pauseEveryMin, profile.pauseEveryMax + 1));
 
-  mainWindow?.webContents.send("typing-status", { state: "typing", total: len, done: 0 });
+  const stats = baseStats(len);
+  const startedAt = Date.now();
+  let lastCharAt = startedAt;
+
+  emitTypingProgress(stats, "typing");
 
   for (let i = 0; i < len; i++) {
     if (!isTyping) {
-      mainWindow?.webContents.send("typing-status", { state: "stopped" });
+      stats.elapsedMs = Date.now() - startedAt;
+      emitTypingProgress(stats, "stopped");
       return;
     }
 
@@ -157,16 +194,29 @@ async function doType(text, cps, options = {}) {
     const t0 = Date.now();
 
     try {
-      await maybeTypoFix(rawCh, profile);
+      const madeMistake = await maybeTypoFix(rawCh, profile);
+      if (madeMistake) stats.mistakes += 1;
       await sendKey(ch);
     } catch (_e) {
-      mainWindow?.webContents.send("typing-status", { state: "error" });
+      stats.elapsedMs = Date.now() - startedAt;
+      emitTypingProgress(stats, "error");
       isTyping = false;
       return;
     }
 
-    if (i % 3 === 0 || i === len - 1) {
-      mainWindow?.webContents.send("typing-status", { state: "typing", total: len, done: i + 1 });
+    const now = Date.now();
+    const delta = Math.max(1, now - lastCharAt);
+    const instWpm = 12000 / delta;
+    stats.minWpm = stats.minWpm === null ? instWpm : Math.min(stats.minWpm, instWpm);
+    stats.maxWpm = stats.maxWpm === null ? instWpm : Math.max(stats.maxWpm, instWpm);
+
+    stats.done = i + 1;
+    stats.elapsedMs = now - startedAt;
+    const elapsedMinutes = Math.max(stats.elapsedMs / 60000, 1 / 60000);
+    stats.avgWpm = (stats.done / 5) / elapsedMinutes;
+
+    if (i % 2 === 0 || i === len - 1) {
+      emitTypingProgress(stats, "typing");
     }
 
     charsUntilPause -= 1;
@@ -179,10 +229,13 @@ async function doType(text, cps, options = {}) {
     if (wait > 2) {
       await sleep(wait);
     }
+
+    lastCharAt = Date.now();
   }
 
   isTyping = false;
-  mainWindow?.webContents.send("typing-status", { state: "done", total: len, done: len });
+  stats.elapsedMs = Date.now() - startedAt;
+  emitTypingProgress(stats, "done");
 }
 
 function registerHotkey(key) {
@@ -225,6 +278,14 @@ ipcMain.handle("toggle-aot", () => {
   const next = !mainWindow.isAlwaysOnTop();
   mainWindow.setAlwaysOnTop(next);
   return next;
+});
+
+ipcMain.handle("set-window-size", (_event, payload) => {
+  if (!mainWindow) return false;
+  const width = clamp(Number(payload?.width) || 980, 760, 1680);
+  const height = clamp(Number(payload?.height) || 760, 620, 1200);
+  mainWindow.setSize(Math.round(width), Math.round(height), true);
+  return true;
 });
 
 app.whenReady().then(() => {

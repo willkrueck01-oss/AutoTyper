@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("api", {
   minimize: () => ipcRenderer.send("minimize-window"),
   close: () => ipcRenderer.send("close-window"),
   toggleAOT: () => ipcRenderer.invoke("toggle-aot"),
+  setWindowSize: (width, height) => ipcRenderer.invoke("set-window-size", { width, height }),
   onTypingStatus: (cb) => ipcRenderer.on("typing-status", (_e, d) => cb(d)),
   onRequestText: (cb) => ipcRenderer.on("request-text", () => cb()),
 });

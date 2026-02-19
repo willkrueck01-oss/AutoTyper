@@ -15,21 +15,45 @@
       --muted: #cfb9a0;
       --accent: #d7a46a;
       --accent-2: #b3743e;
+      --good: #6ad7a9;
+      --warn: #e3bc7c;
+    }
+
+    [data-theme="diamond"] {
+      --bg: #172136;
+      --panel: #1d2b43;
+      --panel-soft: #243451;
+      --line: #3b587f;
+      --line-strong: #5e85bb;
+      --text: #eff8ff;
+      --muted: #a8c2df;
+      --accent: #64d6ff;
+      --accent-2: #6ca1ff;
+      --good: #87f9b6;
+      --warn: #ffd489;
+    }
+
+    [data-theme="onyx"] {
+      --bg: #121212;
+      --panel: #1f1f1f;
+      --panel-soft: #292929;
+      --line: #3c3c3c;
+      --line-strong: #5c5c5c;
+      --text: #f2f2f2;
+      --muted: #b2b2b2;
+      --accent: #d4d4d4;
+      --accent-2: #969696;
+      --good: #9fe2ab;
+      --warn: #dbcb98;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: transparent;
-      color: var(--text);
-      user-select: none;
-    }
+    body { font-family: "Segoe UI", Arial, sans-serif; background: transparent; color: var(--text); user-select: none; }
 
     .shell {
       height: 100vh;
       width: 100vw;
-      background: radial-gradient(circle at top, #3f2f22 0%, var(--bg) 45%);
+      background: radial-gradient(circle at top, color-mix(in oklab, var(--panel-soft) 55%, var(--bg)) 0%, var(--bg) 46%);
       border: 1px solid var(--line-strong);
       border-radius: 14px;
       overflow: hidden;
@@ -39,248 +63,66 @@
     }
 
     .titlebar {
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px 0 14px;
-      border-bottom: 1px solid var(--line);
-      -webkit-app-region: drag;
-      background: rgba(26, 18, 12, 0.75);
+      height: 40px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 10px 0 14px; border-bottom: 1px solid var(--line);
+      -webkit-app-region: drag; background: rgba(10, 10, 10, 0.3);
     }
 
-    .brand {
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      color: var(--text);
-      font-weight: 700;
-    }
-
+    .brand { font-size: 12px; letter-spacing: 0.12em; font-weight: 700; }
     .wcontrols { display: flex; gap: 6px; -webkit-app-region: no-drag; }
-
     .wcontrols button {
-      width: 26px;
-      height: 26px;
-      border-radius: 7px;
-      border: 1px solid var(--line);
-      background: #3a2a1f;
-      color: var(--text);
-      cursor: pointer;
+      width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel);
+      color: var(--text); cursor: pointer;
     }
 
-    .wcontrols button:hover { border-color: var(--line-strong); background: #4a3627; }
+    .content { padding: 12px; display: flex; flex-direction: column; gap: 10px; -webkit-app-region: no-drag; height: calc(100vh - 40px); }
+    .tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .tab-btn { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--muted); font-size: 11px; font-weight: 700; padding: 8px; cursor: pointer; }
+    .tab-btn.active { background: linear-gradient(160deg, var(--accent-2), var(--accent)); color: #101820; border-color: color-mix(in oklab, var(--accent), white 10%); }
 
-    .content {
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      -webkit-app-region: no-drag;
-      height: calc(100vh - 40px);
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-
-    .tab-btn {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #3a2a1f;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      padding: 8px;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(160deg, var(--accent-2), var(--accent));
-      color: #2f1d12;
-      border-color: #c08650;
-    }
-
-    .panel-area {
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: rgba(44, 31, 22, 0.9);
-      padding: 10px;
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-    }
-
+    .panel-area { border: 1px solid var(--line); border-radius: 11px; background: color-mix(in oklab, var(--panel) 80%, black 20%); padding: 10px; flex: 1; min-height: 0; overflow: auto; }
     .panel { display: none; }
     .panel.active { display: block; }
 
-    label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 5px;
+    label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.11em; color: var(--muted); display: block; margin-bottom: 5px; }
+    textarea, input[type="number"], input[type="text"], input[type="range"], select {
+      width: 100%; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 9px 10px; font-size: 13px; outline: none;
     }
+    textarea { min-height: 200px; resize: vertical; max-height: 360px; line-height: 1.4; }
+    input[type="range"] { padding: 0; accent-color: var(--accent); height: 28px; }
 
-    textarea,
-    input[type="number"],
-    input[type="text"],
-    input[type="range"] {
-      width: 100%;
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      padding: 9px 10px;
-      font-size: 13px;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 165px;
-      resize: vertical;
-      max-height: 250px;
-      line-height: 1.4;
-    }
-
-    input[type="range"] {
-      padding: 0;
-      accent-color: var(--accent);
-      height: 28px;
-    }
-
-    textarea:focus,
-    input:focus { border-color: var(--line-strong); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .hotkey-input {
-      text-align: center;
-      cursor: pointer;
-      caret-color: transparent;
-      font-weight: 600;
-    }
-
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .hotkey-input { text-align: center; cursor: pointer; caret-color: transparent; font-weight: 600; }
     .hotkey-input.capturing { border-color: var(--accent); }
-
-    .row-inline {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      padding: 9px 10px;
-      background: var(--panel-soft);
-      margin-bottom: 10px;
-    }
-
-    .checkbox-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
+    .row-inline { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; background: var(--panel-soft); margin-bottom: 10px; }
+    .checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
     input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+    .range-value { margin-top: 4px; color: var(--muted); font-size: 11px; text-align: right; }
 
-    .range-value {
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: right;
-    }
+    .btn { border: 1px solid var(--line); background: var(--panel-soft); color: var(--text); border-radius: 9px; padding: 10px; font-size: 12px; cursor: pointer; font-weight: 700; }
+    .btn-launch { flex: 1; background: linear-gradient(160deg, var(--accent-2), var(--accent)); color: #111; }
+    .btn-launch.stop { border-color: var(--warn); background: #6a4122; color: #fbe9d5; }
+    .actions, .tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
-    .actions { display: flex; gap: 8px; }
+    .progress-wrap { height: 6px; border-radius: 999px; background: #221d19; overflow: hidden; border: 1px solid var(--line); }
+    .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 55%, white)); transition: width 0.15s linear; }
+    .status { border-radius: 9px; border: 1px solid var(--line); padding: 9px 10px; font-size: 12px; text-align: center; color: var(--muted); background: var(--panel-soft); min-height: 36px; }
 
-    .btn {
-      border: 1px solid var(--line);
-      background: #3f2e21;
-      color: var(--text);
-      border-radius: 9px;
-      padding: 10px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .stat { border: 1px solid var(--line); background: var(--panel-soft); border-radius: 8px; padding: 8px; }
+    .stat-title { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat-value { margin-top: 4px; font-size: 15px; font-weight: 700; }
 
-    .btn:hover { border-color: var(--line-strong); background: #4a3626; }
-
-    .btn-launch {
-      flex: 1;
-      background: linear-gradient(160deg, #ad6f3c, #d7a46a);
-      border-color: #c28553;
-      color: #2f1d12;
-    }
-
-    .btn-launch.stop {
-      border-color: #d8b286;
-      background: #6a4122;
-      color: #fbe9d5;
-    }
-
-    .progress-wrap {
-      margin-top: 2px;
-      height: 5px;
-      border-radius: 999px;
-      background: #2f2219;
-      overflow: hidden;
-      border: 1px solid var(--line);
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #d7a46a, #f0cca1);
-      transition: width 0.15s linear;
-    }
-
-    .status {
-      border-radius: 9px;
-      border: 1px solid var(--line);
-      padding: 9px 10px;
-      font-size: 12px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--panel-soft);
-      min-height: 36px;
-    }
-
-    .status.typing,
-    .status.done,
-    .status.error,
-    .status.stopped { color: var(--text); border-color: var(--line-strong); }
-
-    kbd {
-      border: 1px solid var(--line-strong);
-      background: #5e432f;
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 11px;
-      color: var(--text);
-    }
-
-    .footer {
-      margin-top: 2px;
-      font-size: 11px;
-      color: #c4aa8f;
-      text-align: center;
-    }
+    .history { margin-top: 10px; border: 1px solid var(--line); border-radius: 9px; padding: 8px; max-height: 130px; overflow: auto; background: var(--panel-soft); font-size: 12px; }
+    .history div { padding: 4px 0; border-bottom: 1px dashed color-mix(in oklab, var(--line) 45%, transparent); }
+    .history div:last-child { border-bottom: none; }
+    .footer { font-size: 11px; color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
-<div class="shell">
+<div class="shell" id="appShell">
   <div class="titlebar">
-    <span class="brand">AUTO TYPER · COZY MODE</span>
+    <span class="brand">AUTO TYPER · TITANIUM EDITION</span>
     <div class="wcontrols">
       <button onclick="window.api.minimize()" title="Minimize">─</button>
       <button onclick="window.api.close()" title="Close">✕</button>
@@ -288,11 +130,13 @@
   </div>
 
   <div class="content">
-    <div class="tabs" id="tabs">
+    <div class="tabs">
       <button class="tab-btn active" data-tab="textPanel">TEXT</button>
       <button class="tab-btn" data-tab="flowPanel">FLOW</button>
       <button class="tab-btn" data-tab="mistakesPanel">MISTAKES</button>
-      <button class="tab-btn" data-tab="controlsPanel">CONTROLS</button>
+      <button class="tab-btn" data-tab="controlsPanel">CONTROL</button>
+      <button class="tab-btn" data-tab="toolsPanel">TOOLS</button>
+      <button class="tab-btn" data-tab="statsPanel">STATS</button>
     </div>
 
     <div class="panel-area">
@@ -303,30 +147,14 @@
 
       <div class="panel" id="flowPanel">
         <div class="grid" style="margin-bottom:10px;">
-          <div>
-            <label for="speed">Base chars/sec</label>
-            <input type="number" id="speed" value="20" min="1" max="500" step="1" />
-          </div>
-          <div>
-            <label for="startupDelayMin">Startup delay min (ms)</label>
-            <input type="number" id="startupDelayMin" value="300" min="0" max="10000" step="50" />
-          </div>
-          <div>
-            <label for="pauseEveryMin">Pause every (min chars)</label>
-            <input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" />
-          </div>
-          <div>
-            <label for="pauseEveryMax">Pause every (max chars)</label>
-            <input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" />
-          </div>
-          <div>
-            <label for="pauseMsMin">Pause length min (ms)</label>
-            <input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" />
-          </div>
-          <div>
-            <label for="pauseMsMax">Pause length max (ms)</label>
-            <input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" />
-          </div>
+          <div><label for="speed">Base chars/sec</label><input type="number" id="speed" value="20" min="1" max="500" step="1" /></div>
+          <div><label for="persistence">WPM persistence</label><input type="range" id="persistence" min="0" max="100" value="65" step="1" /><div class="range-value" id="persistenceValue">65% (balanced variance)</div></div>
+          <div><label for="startupDelayMin">Startup delay min (ms)</label><input type="number" id="startupDelayMin" value="300" min="0" max="10000" step="50" /></div>
+          <div><label for="startupDelayMax">Startup delay max (ms)</label><input type="number" id="startupDelayMax" value="750" min="0" max="10000" step="50" /></div>
+          <div><label for="pauseEveryMin">Pause every (min chars)</label><input type="number" id="pauseEveryMin" value="1" min="1" max="15" step="1" /></div>
+          <div><label for="pauseEveryMax">Pause every (max chars)</label><input type="number" id="pauseEveryMax" value="15" min="1" max="15" step="1" /></div>
+          <div><label for="pauseMsMin">Pause length min (ms)</label><input type="number" id="pauseMsMin" value="80" min="20" max="5000" step="10" /></div>
+          <div><label for="pauseMsMax">Pause length max (ms)</label><input type="number" id="pauseMsMax" value="420" min="20" max="8000" step="10" /></div>
         </div>
       </div>
 
@@ -345,43 +173,57 @@
 
       <div class="panel" id="controlsPanel">
         <div class="grid" style="margin-bottom:10px;">
-          <div>
-            <label for="hotkey">Hotkey</label>
-            <input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" />
+          <div><label for="hotkey">Hotkey</label><input type="text" id="hotkey" class="hotkey-input" value="F2" readonly title="Click to rebind" /></div>
+          <div><label for="theme">Theme</label>
+            <select id="theme"><option value="cozy">Cozy Bronze</option><option value="diamond">Diamond Blue</option><option value="onyx">Onyx Mono</option></select>
           </div>
-          <div>
-            <label for="startupDelayMax">Startup delay max (ms)</label>
-            <input type="number" id="startupDelayMax" value="750" min="0" max="10000" step="50" />
-          </div>
+          <div><label for="width">Window width</label><input id="width" type="number" min="760" max="1680" step="10" value="980"></div>
+          <div><label for="height">Window height</label><input id="height" type="number" min="620" max="1200" step="10" value="760"></div>
         </div>
 
         <div class="row-inline">
-          <div class="checkbox-wrap">
-            <input type="checkbox" id="humanized" checked />
-            <label for="humanized" style="margin:0;">Humanized timing</label>
-          </div>
+          <div class="checkbox-wrap"><input type="checkbox" id="humanized" checked /><label for="humanized" style="margin:0;">Humanized timing</label></div>
           <button class="btn" id="aotBtn" title="Always on top">AOT ON</button>
+          <button class="btn" id="resizeBtn">APPLY SIZE</button>
         </div>
 
-        <div class="actions">
-          <button class="btn btn-launch" id="startBtn">START</button>
+        <div class="actions"><button class="btn btn-launch" id="startBtn">START</button><button class="btn" id="clearBtn">CLEAR</button></div>
+      </div>
+
+      <div class="panel" id="toolsPanel">
+        <label>Text utilities</label>
+        <div class="tools">
+          <button class="btn" data-tool="trim">Trim spacing</button>
+          <button class="btn" data-tool="title">Title Case</button>
+          <button class="btn" data-tool="upper">UPPERCASE</button>
+          <button class="btn" data-tool="lower">lowercase</button>
+          <button class="btn" data-tool="reverse">Reverse text</button>
+          <button class="btn" data-tool="estimate">Estimate run time</button>
         </div>
+      </div>
+
+      <div class="panel" id="statsPanel">
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-title">Elapsed</div><div class="stat-value" id="elapsedStat">0.0s</div></div>
+          <div class="stat"><div class="stat-title">Mistakes</div><div class="stat-value" id="mistakeStat">0</div></div>
+          <div class="stat"><div class="stat-title">Lowest WPM</div><div class="stat-value" id="minWpmStat">—</div></div>
+          <div class="stat"><div class="stat-title">Highest WPM</div><div class="stat-value" id="maxWpmStat">—</div></div>
+        </div>
+        <div class="history" id="sessionHistory"></div>
       </div>
     </div>
 
     <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
-
-    <div class="status idle" id="status">
-      Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort
-    </div>
-
-    <div class="footer">Warm bakery palette • section tabs • adjustable mistake behavior</div>
+    <div class="status idle" id="status">Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort</div>
+    <div class="footer">Resizable shell • theme engine • live stats + session history • text tools</div>
   </div>
 </div>
 
 <script>
 const textEl = document.getElementById("text");
 const speedEl = document.getElementById("speed");
+const persistenceEl = document.getElementById("persistence");
+const persistenceValueEl = document.getElementById("persistenceValue");
 const hotkeyEl = document.getElementById("hotkey");
 const humanizedEl = document.getElementById("humanized");
 const pauseEveryMinEl = document.getElementById("pauseEveryMin");
@@ -395,9 +237,19 @@ const correctionSpeedEl = document.getElementById("correctionSpeed");
 const mistakeRateValueEl = document.getElementById("mistakeRateValue");
 const correctionSpeedValueEl = document.getElementById("correctionSpeedValue");
 const startBtn = document.getElementById("startBtn");
+const clearBtn = document.getElementById("clearBtn");
+const resizeBtn = document.getElementById("resizeBtn");
+const widthEl = document.getElementById("width");
+const heightEl = document.getElementById("height");
+const themeEl = document.getElementById("theme");
 const aotBtn = document.getElementById("aotBtn");
 const statusEl = document.getElementById("status");
 const progressEl = document.getElementById("progress");
+const elapsedStat = document.getElementById("elapsedStat");
+const mistakeStat = document.getElementById("mistakeStat");
+const minWpmStat = document.getElementById("minWpmStat");
+const maxWpmStat = document.getElementById("maxWpmStat");
+const sessionHistory = document.getElementById("sessionHistory");
 
 let typing = false;
 let capturing = false;
@@ -407,61 +259,46 @@ function num(el, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function formatSeconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
+function formatWpm(v) { return Number.isFinite(v) ? `${Math.round(v)}` : "—"; }
+
 function syncPauseRanges() {
-  const minChars = Math.max(1, Math.min(15, num(pauseEveryMinEl, 1)));
-  const maxChars = Math.max(minChars, Math.min(15, num(pauseEveryMaxEl, 15)));
-  pauseEveryMinEl.value = minChars;
-  pauseEveryMaxEl.value = maxChars;
-
-  const minMs = Math.max(20, Math.min(5000, num(pauseMsMinEl, 80)));
-  const maxMs = Math.max(minMs, Math.min(8000, num(pauseMsMaxEl, 420)));
-  pauseMsMinEl.value = minMs;
-  pauseMsMaxEl.value = maxMs;
-
-  const startMin = Math.max(0, Math.min(10000, num(startupDelayMinEl, 300)));
-  const startMax = Math.max(startMin, Math.min(10000, num(startupDelayMaxEl, 750)));
-  startupDelayMinEl.value = startMin;
-  startupDelayMaxEl.value = startMax;
+  pauseEveryMinEl.value = Math.max(1, Math.min(15, num(pauseEveryMinEl, 1)));
+  pauseEveryMaxEl.value = Math.max(num(pauseEveryMinEl, 1), Math.min(15, num(pauseEveryMaxEl, 15)));
+  pauseMsMinEl.value = Math.max(20, Math.min(5000, num(pauseMsMinEl, 80)));
+  pauseMsMaxEl.value = Math.max(num(pauseMsMinEl, 80), Math.min(8000, num(pauseMsMaxEl, 420)));
+  startupDelayMinEl.value = Math.max(0, Math.min(10000, num(startupDelayMinEl, 300)));
+  startupDelayMaxEl.value = Math.max(num(startupDelayMinEl, 300), Math.min(10000, num(startupDelayMaxEl, 750)));
 }
 
 function syncMistakeLabels() {
   const rate = Math.max(0, Math.min(12, num(mistakeRateEl, 2)));
   mistakeRateEl.value = rate;
   mistakeRateValueEl.textContent = `${rate}% chance per letter`;
-
-  const labels = {
-    1: "Very slow",
-    2: "Slow",
-    3: "Balanced",
-    4: "Fast",
-    5: "Instant"
-  };
-  const correction = Math.max(1, Math.min(5, num(correctionSpeedEl, 3)));
-  correctionSpeedEl.value = correction;
-  correctionSpeedValueEl.textContent = labels[correction] || "Balanced";
+  const labels = {1: "Very slow", 2: "Slow", 3: "Balanced", 4: "Fast", 5: "Instant"};
+  correctionSpeedValueEl.textContent = labels[Math.max(1, Math.min(5, num(correctionSpeedEl, 3)))] || "Balanced";
 }
 
-pauseEveryMinEl.addEventListener("change", syncPauseRanges);
-pauseEveryMaxEl.addEventListener("change", syncPauseRanges);
-pauseMsMinEl.addEventListener("change", syncPauseRanges);
-pauseMsMaxEl.addEventListener("change", syncPauseRanges);
-startupDelayMinEl.addEventListener("change", syncPauseRanges);
-startupDelayMaxEl.addEventListener("change", syncPauseRanges);
+function syncPersistenceLabel() {
+  const val = Math.max(0, Math.min(100, num(persistenceEl, 65)));
+  persistenceEl.value = val;
+  const vibe = val > 82 ? "laser steady" : val > 55 ? "balanced variance" : "expressive human swing";
+  persistenceValueEl.textContent = `${val}% (${vibe})`;
+}
 
+[ pauseEveryMinEl, pauseEveryMaxEl, pauseMsMinEl, pauseMsMaxEl, startupDelayMinEl, startupDelayMaxEl ].forEach((el) => el.addEventListener("change", syncPauseRanges));
 mistakeRateEl.addEventListener("input", syncMistakeLabels);
 correctionSpeedEl.addEventListener("input", syncMistakeLabels);
+persistenceEl.addEventListener("input", syncPersistenceLabel);
 
 hotkeyEl.addEventListener("click", () => {
-  capturing = true;
-  hotkeyEl.value = "...";
-  hotkeyEl.classList.add("capturing");
+  capturing = true; hotkeyEl.value = "..."; hotkeyEl.classList.add("capturing");
 });
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const tabId = btn.dataset.tab;
     document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === tabId));
+    document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === btn.dataset.tab));
   });
 });
 
@@ -473,13 +310,7 @@ document.addEventListener("keydown", async (e) => {
   const key = mapKey(e);
   hotkeyEl.value = key;
   const ok = await window.api.registerHotkey(key);
-  if (!ok) {
-    statusEl.className = "status error";
-    statusEl.innerHTML = `Failed to bind <kbd>${key}</kbd> — try another`;
-  } else {
-    statusEl.className = "status idle";
-    statusEl.innerHTML = `Press <kbd>${key}</kbd> in target window to type · <kbd>ESC</kbd> to abort`;
-  }
+  statusEl.innerHTML = ok ? `Press <kbd>${key}</kbd> in target window to type · <kbd>ESC</kbd> to abort` : `Failed to bind <kbd>${key}</kbd> — try another`;
 });
 
 function mapKey(e) {
@@ -487,19 +318,38 @@ function mapKey(e) {
   let key = map[e.key] || e.key;
   if (/^F\d+$/.test(key)) return key;
   if (key.length === 1) key = key.toUpperCase();
-  let combo = "";
-  if (e.ctrlKey) combo += "CommandOrControl+";
-  if (e.altKey) combo += "Alt+";
-  if (e.shiftKey && key.length > 1) combo += "Shift+";
-  return combo + key;
+  return `${e.ctrlKey ? "CommandOrControl+" : ""}${e.altKey ? "Alt+" : ""}${e.shiftKey && key.length > 1 ? "Shift+" : ""}${key}`;
 }
 
-startBtn.addEventListener("click", () => {
-  if (typing) {
-    window.api.stopTyping();
-  } else {
-    sendText();
-  }
+startBtn.addEventListener("click", () => (typing ? window.api.stopTyping() : sendText()));
+clearBtn.addEventListener("click", () => { textEl.value = ""; statusEl.textContent = "Cleared text."; });
+resizeBtn.addEventListener("click", async () => {
+  const ok = await window.api.setWindowSize(num(widthEl, 980), num(heightEl, 760));
+  statusEl.textContent = ok ? "Window size updated." : "Failed to resize window.";
+});
+
+themeEl.addEventListener("change", () => {
+  const v = themeEl.value;
+  document.documentElement.setAttribute("data-theme", v === "cozy" ? "" : v);
+  statusEl.textContent = `Theme switched to ${themeEl.options[themeEl.selectedIndex].text}.`;
+});
+
+document.querySelectorAll("[data-tool]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const tool = button.dataset.tool;
+    if (tool === "trim") textEl.value = textEl.value.replace(/\s+/g, " ").replace(/\n\s+/g, "\n").trim();
+    if (tool === "title") textEl.value = textEl.value.toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
+    if (tool === "upper") textEl.value = textEl.value.toUpperCase();
+    if (tool === "lower") textEl.value = textEl.value.toLowerCase();
+    if (tool === "reverse") textEl.value = textEl.value.split("").reverse().join("");
+    if (tool === "estimate") {
+      const cps = Number.parseFloat(speedEl.value) || 20;
+      const seconds = textEl.value.length / Math.max(cps, 1);
+      statusEl.textContent = `Estimated runtime: ${seconds.toFixed(1)}s (${Math.round(seconds / 60)} min approx)`;
+      return;
+    }
+    statusEl.textContent = `Applied tool: ${button.textContent}.`;
+  });
 });
 
 function sendText() {
@@ -507,9 +357,9 @@ function sendText() {
   const speed = Number.parseFloat(speedEl.value) || 20;
   syncPauseRanges();
   syncMistakeLabels();
+  syncPersistenceLabel();
 
   if (!text.trim()) {
-    statusEl.className = "status error";
     statusEl.textContent = "No text entered.";
     return;
   }
@@ -526,6 +376,7 @@ function sendText() {
     startupDelayMax: num(startupDelayMaxEl, 750),
     typoRatePercent: num(mistakeRateEl, 2),
     correctionSpeed: num(correctionSpeedEl, 3),
+    persistencePercent: num(persistenceEl, 65),
   };
 
   window.api.startTyping(text, speed, options);
@@ -535,45 +386,48 @@ window.api.onRequestText(() => sendText());
 
 window.api.onTypingStatus((d) => {
   const key = hotkeyEl.value;
-  switch (d.state) {
-    case "typing":
-      typing = true;
-      startBtn.textContent = "STOP";
-      startBtn.classList.add("stop");
-      statusEl.className = "status typing";
-      if (d.total) {
-        const pct = Math.round((d.done / d.total) * 100);
-        statusEl.textContent = `Typing... ${pct}%`;
-        progressEl.style.width = pct + "%";
-      } else {
-        statusEl.textContent = "Typing...";
-      }
-      break;
-    case "done":
-      typing = false;
-      startBtn.textContent = "START";
-      startBtn.classList.remove("stop");
-      statusEl.className = "status done";
-      statusEl.innerHTML = `Done · press <kbd>${key}</kbd> to run again`;
-      progressEl.style.width = "100%";
-      setTimeout(() => { progressEl.style.width = "0%"; }, 1800);
-      break;
-    case "stopped":
-      typing = false;
-      startBtn.textContent = "START";
-      startBtn.classList.remove("stop");
-      statusEl.className = "status stopped";
-      statusEl.textContent = "Typing stopped.";
-      progressEl.style.width = "0%";
-      break;
-    case "error":
-      typing = false;
-      startBtn.textContent = "START";
-      startBtn.classList.remove("stop");
-      statusEl.className = "status error";
-      statusEl.textContent = "Failed to send keys. Make sure a target window is focused.";
-      progressEl.style.width = "0%";
-      break;
+  const elapsed = d.elapsedMs || 0;
+  elapsedStat.textContent = formatSeconds(elapsed);
+  mistakeStat.textContent = String(d.mistakes || 0);
+  minWpmStat.textContent = formatWpm(d.minWpm);
+  maxWpmStat.textContent = formatWpm(d.maxWpm);
+
+  if (d.total) {
+    progressEl.style.width = `${Math.round((d.done / d.total) * 100)}%`;
+  }
+
+  if (d.state === "typing") {
+    typing = true;
+    startBtn.textContent = "STOP";
+    startBtn.classList.add("stop");
+    statusEl.textContent = `Typing... ${d.total ? Math.round((d.done / d.total) * 100) : 0}% • avg ${formatWpm(d.avgWpm)} WPM`;
+  }
+
+  if (d.state === "done") {
+    typing = false;
+    startBtn.textContent = "START";
+    startBtn.classList.remove("stop");
+    statusEl.innerHTML = `Done in ${formatSeconds(elapsed)} · ${d.mistakes || 0} mistakes · <kbd>${key}</kbd> to run again`;
+    const item = document.createElement("div");
+    item.textContent = `${new Date().toLocaleTimeString()} · ${formatSeconds(elapsed)} · mistakes ${d.mistakes || 0} · WPM ${formatWpm(d.minWpm)}-${formatWpm(d.maxWpm)}`;
+    sessionHistory.prepend(item);
+    while (sessionHistory.children.length > 12) sessionHistory.removeChild(sessionHistory.lastChild);
+  }
+
+  if (d.state === "stopped") {
+    typing = false;
+    startBtn.textContent = "START";
+    startBtn.classList.remove("stop");
+    statusEl.textContent = `Typing stopped after ${formatSeconds(elapsed)}.`;
+    progressEl.style.width = "0%";
+  }
+
+  if (d.state === "error") {
+    typing = false;
+    startBtn.textContent = "START";
+    startBtn.classList.remove("stop");
+    statusEl.textContent = "Failed to send keys. Make sure a target window is focused.";
+    progressEl.style.width = "0%";
   }
 });
 
@@ -585,6 +439,7 @@ aotBtn.addEventListener("click", async () => {
 
 syncPauseRanges();
 syncMistakeLabels();
+syncPersistenceLabel();
 </script>
 </body>
 </html>
