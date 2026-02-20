@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'" />
   <title>AutoTyper Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     /* ═══════════════════════════════════════
-       THEMES — 8 total
+       THEMES — 9 total
     ═══════════════════════════════════════ */
     :root {
       /* Cozy Bronze (default) */
@@ -153,6 +156,24 @@
       --shimmer:      rgba(240,198,68,0.05);
     }
 
+    [data-theme="day"] {
+      --bg:           #eef1f6;
+      --panel:        #ffffff;
+      --panel-soft:   #f4f6fa;
+      --line:         #d0d7e3;
+      --line-strong:  #b0bdd0;
+      --text:         #1a1f2e;
+      --muted:        #566070;
+      --accent:       #4f7cff;
+      --accent-2:     #3461e0;
+      --good:         #0f9e60;
+      --warn:         #d97700;
+      --danger:       #d62b2b;
+      --glow:         rgba(79,124,255,0.28);
+      --glow-strong:  rgba(79,124,255,0.52);
+      --shimmer:      rgba(79,124,255,0.06);
+    }
+
     /* ═══════════════════════════════════════
        KEYFRAMES
     ═══════════════════════════════════════ */
@@ -195,11 +216,13 @@
     html { font-size: 14px; }
 
     body {
-      font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      font-family: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
       background: transparent;
       color: var(--text);
       user-select: none;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
     }
 
     /* ═══════════════════════════════════════
@@ -213,6 +236,30 @@
       transition: background 0.2s;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* ═══════════════════════════════════════
+       FOCUS VISIBLE — keyboard navigation
+    ═══════════════════════════════════════ */
+    :focus { outline: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    button:focus-visible,
+    .tab-btn:focus-visible,
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
+    }
+
+    textarea:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: none;
+    }
 
     /* ═══════════════════════════════════════
        SHELL
@@ -291,7 +338,7 @@
 
     .brand {
       font-size: 11px;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       font-weight: 800;
       background: linear-gradient(90deg,
         var(--muted) 0%,
@@ -380,12 +427,13 @@
       background: color-mix(in oklab, var(--panel) 90%, black 10%);
       color: var(--muted);
       font-size: 10px;
-      font-weight: 800;
-      padding: 9px 4px;
+      font-weight: 700;
+      padding: 10px 4px;
       cursor: pointer;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.07em;
       transition: all 0.18s ease;
       position: relative;
+      font-family: inherit;
     }
 
     .tab-btn:hover:not(.active) {
@@ -424,13 +472,13 @@
        TYPOGRAPHY & FORM ELEMENTS
     ═══════════════════════════════════════ */
     label {
-      font-size: 10px;
+      font-size: 10.5px;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.10em;
       color: var(--muted);
       display: block;
-      margin-bottom: 6px;
-      font-weight: 800;
+      margin-bottom: 7px;
+      font-weight: 700;
     }
 
     textarea,
@@ -442,11 +490,12 @@
       border: 1px solid var(--line);
       background: color-mix(in oklab, var(--panel) 92%, black 8%);
       color: var(--text);
-      padding: 9px 11px;
-      font-size: 12.5px;
+      padding: 9px 12px;
+      font-size: 13px;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
       font-family: inherit;
+      font-weight: 400;
     }
 
     textarea:focus,
@@ -501,13 +550,13 @@
     }
 
     .section-label {
-      font-size: 9.5px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.11em;
       color: var(--muted);
-      font-weight: 800;
-      margin-bottom: 7px;
-      opacity: 0.65;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.75;
     }
 
     .row-inline {
@@ -546,8 +595,8 @@
       text-align: center;
       cursor: pointer;
       caret-color: transparent;
-      font-weight: 800;
-      letter-spacing: 0.12em;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       font-size: 13px;
     }
 
@@ -564,8 +613,8 @@
       border-radius: 5px;
       padding: 1px 6px;
       font-size: 11px;
-      font-family: "Cascadia Code", "Consolas", monospace;
-      font-weight: 700;
+      font-family: "Cascadia Code", "Cascadia Mono", "Consolas", monospace;
+      font-weight: 600;
       color: var(--accent);
     }
 
@@ -577,11 +626,11 @@
       background: color-mix(in oklab, var(--panel-soft) 95%, black 5%);
       color: var(--text);
       border-radius: 9px;
-      padding: 10px 12px;
-      font-size: 11.5px;
+      padding: 10px 13px;
+      font-size: 12px;
       cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      font-weight: 600;
+      letter-spacing: 0.03em;
       transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
       position: relative;
       overflow: hidden;
@@ -604,8 +653,8 @@
       color: rgba(0,0,0,0.85);
       border-color: color-mix(in oklab, var(--accent) 70%, white 30%);
       font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.14em;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       box-shadow: 0 4px 18px var(--glow);
     }
 
@@ -660,7 +709,7 @@
        PROGRESS BAR
     ═══════════════════════════════════════ */
     .progress-wrap {
-      height: 5px;
+      height: 6px;
       border-radius: 999px;
       background: color-mix(in oklab, var(--panel) 85%, black 15%);
       overflow: hidden;
@@ -691,19 +740,19 @@
     .status {
       border-radius: 10px;
       border: 1px solid var(--line);
-      padding: 8px 13px;
-      font-size: 11.5px;
+      padding: 9px 13px;
+      font-size: 12px;
       text-align: center;
       color: var(--muted);
       background: color-mix(in oklab, var(--panel-soft) 75%, black 25%);
-      min-height: 34px;
+      min-height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       transition: border-color 0.2s ease, color 0.2s ease;
       font-weight: 500;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
       gap: 6px;
     }
 
@@ -749,17 +798,17 @@
 
     .stat-title {
       color: var(--muted);
-      font-size: 9px;
+      font-size: 9.5px;
       text-transform: uppercase;
-      letter-spacing: 0.13em;
-      font-weight: 800;
+      letter-spacing: 0.09em;
+      font-weight: 700;
     }
 
     .stat-value {
       margin-top: 6px;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
       line-height: 1;
     }
 
@@ -775,11 +824,11 @@
     }
 
     .history-title {
-      font-size: 9.5px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.09em;
       color: var(--muted);
-      font-weight: 800;
+      font-weight: 700;
     }
 
     .history-clear {
@@ -888,13 +937,13 @@
        FOOTER
     ═══════════════════════════════════════ */
     .footer {
-      font-size: 10px;
+      font-size: 10.5px;
       color: var(--muted);
       text-align: center;
       flex-shrink: 0;
       opacity: 0.55;
-      letter-spacing: 0.06em;
-      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -902,38 +951,38 @@
 <div class="shell" id="appShell">
 
   <!-- ── TITLEBAR ── -->
-  <div class="titlebar">
+  <div class="titlebar" role="banner">
     <div class="titlebar-left">
-      <div class="brand-icon">AT</div>
+      <div class="brand-icon" aria-hidden="true">AT</div>
       <span class="brand">AUTO TYPER PRO</span>
-      <span class="brand-badge">v2.0</span>
+      <span class="brand-badge" aria-hidden="true">v2.0</span>
     </div>
-    <div class="wcontrols">
-      <button onclick="window.api.minimize()" title="Minimize">─</button>
-      <button onclick="window.api.close()" class="btn-close" title="Close">✕</button>
+    <div class="wcontrols" role="group" aria-label="Window controls">
+      <button onclick="window.api.minimize()" title="Minimize" aria-label="Minimize window">─</button>
+      <button onclick="window.api.close()" class="btn-close" title="Close" aria-label="Close window">✕</button>
     </div>
   </div>
 
   <!-- ── CONTENT ── -->
-  <div class="content">
+  <div class="content" role="main" aria-label="AutoTyper Pro main interface">
 
     <!-- TABS -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="textPanel">✏ TEXT</button>
-      <button class="tab-btn" data-tab="flowPanel">⚡ FLOW</button>
-      <button class="tab-btn" data-tab="mistakesPanel">⚠ ERRS</button>
-      <button class="tab-btn" data-tab="controlsPanel">⚙ CTRL</button>
-      <button class="tab-btn" data-tab="toolsPanel">⚒ TOOLS</button>
-      <button class="tab-btn" data-tab="statsPanel">◈ STATS</button>
+    <div class="tabs" role="tablist" aria-label="AutoTyper sections">
+      <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="textPanel"     id="tab-text"     data-tab="textPanel">✏ TEXT</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="flowPanel"     id="tab-flow"     data-tab="flowPanel">⚡ FLOW</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="mistakesPanel" id="tab-mistakes" data-tab="mistakesPanel">⚠ ERRS</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="controlsPanel" id="tab-controls" data-tab="controlsPanel">⚙ CTRL</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="toolsPanel"    id="tab-tools"    data-tab="toolsPanel">⚒ TOOLS</button>
+      <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="statsPanel"    id="tab-stats"    data-tab="statsPanel">◈ STATS</button>
     </div>
 
     <!-- PANEL AREA -->
     <div class="panel-area">
 
       <!-- TEXT PANEL -->
-      <div class="panel active" id="textPanel">
+      <div class="panel active" id="textPanel" role="tabpanel" aria-labelledby="tab-text">
         <label for="text">Input text</label>
-        <textarea id="text" placeholder="Type or paste your text here..." spellcheck="false"></textarea>
+        <textarea id="text" placeholder="Type or paste your text here..." spellcheck="false" aria-describedby="charCount wordCount lineCount"></textarea>
         <div class="text-meta">
           <span id="charCount">0 chars</span>
           <div class="text-meta-right">
@@ -944,7 +993,7 @@
       </div>
 
       <!-- FLOW PANEL -->
-      <div class="panel" id="flowPanel">
+      <div class="panel" id="flowPanel" role="tabpanel" aria-labelledby="tab-flow">
         <div class="grid" style="margin-bottom:10px;">
           <div>
             <label for="speed">Base chars / sec</label>
@@ -973,7 +1022,7 @@
       </div>
 
       <!-- MISTAKES PANEL -->
-      <div class="panel" id="mistakesPanel">
+      <div class="panel" id="mistakesPanel" role="tabpanel" aria-labelledby="tab-mistakes">
         <div style="margin-bottom:14px;">
           <label for="mistakeRate">Mistake frequency</label>
           <input type="range" id="mistakeRate" min="0" max="12" value="2" step="1" />
@@ -988,7 +1037,7 @@
       </div>
 
       <!-- CONTROLS PANEL -->
-      <div class="panel" id="controlsPanel">
+      <div class="panel" id="controlsPanel" role="tabpanel" aria-labelledby="tab-controls">
         <div class="grid" style="margin-bottom:10px;">
           <div>
             <label for="hotkey">Global hotkey</label>
@@ -996,7 +1045,7 @@
           </div>
           <div>
             <label for="theme">Theme</label>
-            <select id="theme">
+            <select id="theme" aria-label="Select color theme">
               <option value="cozy">Cozy Bronze</option>
               <option value="diamond">Diamond Blue</option>
               <option value="onyx">Onyx Mono</option>
@@ -1005,6 +1054,7 @@
               <option value="synthwave">Synthwave Neon</option>
               <option value="arctic">Arctic Glass</option>
               <option value="midnight">Midnight Gold</option>
+              <option value="day">Day Light</option>
             </select>
           </div>
           <div><label for="width">Window width (px)</label><input id="width" type="number" min="760" max="1680" step="10" value="980"></div>
@@ -1016,20 +1066,20 @@
             <input type="checkbox" id="humanized" checked />
             Humanized timing
           </label>
-          <button class="btn btn-active-glow" id="aotBtn" title="Toggle always on top">
-            <span class="aot-dot on" id="aotDot"></span>AOT ON
+          <button class="btn btn-active-glow" id="aotBtn" title="Toggle always on top" aria-label="Toggle always on top — currently on" aria-pressed="true">
+            <span class="aot-dot on" id="aotDot" aria-hidden="true"></span>AOT ON
           </button>
-          <button class="btn" id="resizeBtn">APPLY SIZE</button>
+          <button class="btn" id="resizeBtn" aria-label="Apply window size">APPLY SIZE</button>
         </div>
 
         <div class="actions">
-          <button class="btn btn-launch" id="startBtn">START</button>
-          <button class="btn" id="clearBtn">CLEAR TEXT</button>
+          <button class="btn btn-launch" id="startBtn" aria-label="Start typing">START</button>
+          <button class="btn" id="clearBtn" aria-label="Clear text input">CLEAR TEXT</button>
         </div>
       </div>
 
       <!-- TOOLS PANEL -->
-      <div class="panel" id="toolsPanel">
+      <div class="panel" id="toolsPanel" role="tabpanel" aria-labelledby="tab-tools">
         <label>Command Center — click to transform, analyze, and organize docs</label>
         <div class="tools-grid">
           <button class="btn" data-tool="trim">Trim whitespace</button>
@@ -1061,7 +1111,7 @@
       </div>
 
       <!-- STATS PANEL -->
-      <div class="panel" id="statsPanel">
+      <div class="panel" id="statsPanel" role="tabpanel" aria-labelledby="tab-stats">
         <div class="stats-grid">
           <div class="stat">
             <div class="stat-title">Elapsed</div>
@@ -1092,12 +1142,14 @@
 
     </div><!-- /panel-area -->
 
-    <div class="progress-wrap"><div class="progress-bar" id="progress"></div></div>
-    <div class="status idle" id="status">
-      <span class="status-dot"></span>
+    <div class="progress-wrap" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Typing progress" id="progressWrap">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    <div class="status idle" id="status" role="status" aria-live="polite" aria-atomic="true">
+      <span class="status-dot" aria-hidden="true"></span>
       <span id="statusText">Press <kbd>F2</kbd> in target window to type · <kbd>ESC</kbd> to abort</span>
     </div>
-    <div class="footer">AUTO TYPER PRO · 8 themes · humanized engine · live stats · session history · text tools</div>
+    <div class="footer" aria-hidden="true">AUTO TYPER PRO · 9 themes · humanized engine · live stats · session history · text tools</div>
 
   </div><!-- /content -->
 </div><!-- /shell -->
@@ -1217,7 +1269,11 @@
   /* ── Tabs ── */
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        const isActive = b === btn;
+        b.classList.toggle("active", isActive);
+        b.setAttribute("aria-selected", String(isActive));
+      });
       document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === btn.dataset.tab));
     });
   });
@@ -1280,7 +1336,9 @@
   aotBtn.addEventListener("click", async () => {
     aot = await window.api.toggleAOT();
     aotDot.className = `aot-dot${aot ? " on" : ""}`;
-    aotBtn.innerHTML = `<span class="aot-dot${aot ? " on" : ""}" id="aotDot"></span>AOT ${aot ? "ON" : "OFF"}`;
+    aotBtn.innerHTML = `<span class="aot-dot${aot ? " on" : ""}" id="aotDot" aria-hidden="true"></span>AOT ${aot ? "ON" : "OFF"}`;
+    aotBtn.setAttribute("aria-pressed", String(aot));
+    aotBtn.setAttribute("aria-label", `Toggle always on top — currently ${aot ? "on" : "off"}`);
     if (aot) {
       aotBtn.classList.add("btn-active-glow");
     } else {
@@ -1506,11 +1564,16 @@
     minWpmStat.textContent  = formatWpm(d.minWpm);
     maxWpmStat.textContent  = formatWpm(d.maxWpm);
 
-    if (d.total) progressEl.style.width = `${Math.round((d.done / d.total) * 100)}%`;
+    if (d.total) {
+      const pctVal = Math.round((d.done / d.total) * 100);
+      progressEl.style.width = `${pctVal}%`;
+      document.getElementById("progressWrap").setAttribute("aria-valuenow", String(pctVal));
+    }
 
     if (d.state === "typing") {
       typing = true;
       startBtn.textContent = "STOP";
+      startBtn.setAttribute("aria-label", "Stop typing");
       startBtn.classList.add("stop");
       progressEl.classList.add("active");
       const pct = d.total ? Math.round((d.done / d.total) * 100) : 0;
@@ -1520,6 +1583,7 @@
     if (d.state === "done") {
       typing = false;
       startBtn.textContent = "START";
+      startBtn.setAttribute("aria-label", "Start typing");
       startBtn.classList.remove("stop");
       progressEl.classList.remove("active");
       setStatus("done", `Done in ${formatSeconds(elapsed)} · ${d.mistakes||0} mistakes · <kbd>${key}</kbd> to run again`);
@@ -1539,6 +1603,7 @@
     if (d.state === "stopped") {
       typing = false;
       startBtn.textContent = "START";
+      startBtn.setAttribute("aria-label", "Start typing");
       startBtn.classList.remove("stop");
       progressEl.classList.remove("active");
       progressEl.style.width = "0%";
@@ -1548,6 +1613,7 @@
     if (d.state === "error") {
       typing = false;
       startBtn.textContent = "START";
+      startBtn.setAttribute("aria-label", "Start typing");
       startBtn.classList.remove("stop");
       progressEl.classList.remove("active");
       progressEl.style.width = "0%";
